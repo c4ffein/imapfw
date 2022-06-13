@@ -291,7 +291,7 @@ class Emitter(object):
                     self._previousTopicCount = 0
             self._eventQueue.put(request)
 
-        def async(topic):
+        def asyn(topic):
             return send_event
 
         def sync(topic):
@@ -318,7 +318,7 @@ class Emitter(object):
         if topic.startswith("cached_") or topic.endswith('_sync'):
             setattr(self, topic, sync(topic))
         else:
-            setattr(self, topic, async(topic))
+            setattr(self, topic, asyn(topic))
         return getattr(self, topic)
 
     def help(self) -> None:
