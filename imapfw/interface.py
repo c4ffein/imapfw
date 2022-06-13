@@ -40,32 +40,36 @@ from imapfw.annotation import Iterable, Function
 
 def _iterMehods(cls):
     for name, method in inspect.getmembers(cls, inspect.isfunction):
-        if name.startswith('_'):
+        if name.startswith("_"):
             continue
         yield name, method
+
 
 def _signature(method):
     sig = str(inspect.signature(method))
     return sig
 
+
 def _iterDocImplements(doc: str) -> Iterable[str]:
     implements = []
 
-    lines = doc.split('\n')
+    lines = doc.split("\n")
     for line in lines:
-        for m in re.finditer('implements: (.*)', line):
+        for m in re.finditer("implements: (.*)", line):
             str_implements = m.group(1)
-            lst_implements = [i.strip(' ') for i in str_implements.split(',')]
+            lst_implements = [i.strip(" ") for i in str_implements.split(",")]
             implements += lst_implements
     for implement in implements:
         yield implement
 
+
 def _isDeclaredInGetattr(name: str, cls: type) -> bool:
-    if hasattr(cls, '__getattr__'):
+    if hasattr(cls, "__getattr__"):
         for declaration in _iterDocImplements(cls.__getattr__.__doc__):
             if declaration == name:
                 return True
     return False
+
 
 def _inherit(cls, attributeName, tree, interfaces):
     """Lookup the parents to inherit their interfaces."""
@@ -84,8 +88,7 @@ def _inherit(cls, attributeName, tree, interfaces):
     return _inherit(cls, attributeName, tree, interfaces)
 
 
-def checkInterfaces(reverse: bool=True, signatures: bool=True,
-        declare: bool=True) -> None:
+def checkInterfaces(reverse: bool = True, signatures: bool = True, declare: bool = True) -> None:
     """Make checks about interfaces.
 
     - declare: check that the class implements its declared interfaces.
@@ -102,12 +105,11 @@ def checkInterfaces(reverse: bool=True, signatures: bool=True,
         try:
             cls.__implements__
         except AttributeError as e:
-            raise AttributeError("%s, did you wrote @checkInterfaces after"
-                " @implements?"% e)
+            raise AttributeError("%s, did you wrote @checkInterfaces after" " @implements?" % e)
 
         # Get all declared interfaces and update __doc__ of methods.
-        declaredByInterfaces = {} # Dict[name, method]
-        if hasattr(cls, '__implements__'):
+        declaredByInterfaces = {}  # Dict[name, method]
+        if hasattr(cls, "__implements__"):
             for interface in cls.__implements__:
 
                 for name, method in _iterMehods(interface):
@@ -122,7 +124,7 @@ def checkInterfaces(reverse: bool=True, signatures: bool=True,
 
                     if name not in declaredByInterfaces:
                         # Ignore adapts.
-                        if hasattr(cls, '__adapts__'):
+                        if hasattr(cls, "__adapts__"):
                             if interface not in cls.__adapts__:
                                 declaredByInterfaces[name] = method
                         else:
@@ -137,18 +139,21 @@ def checkInterfaces(reverse: bool=True, signatures: bool=True,
         if declare is True:
             for name in declaredByInterfaces:
                 if name not in methods:
-                    raise TypeError("class %s declares to implement %s"
-                        " but %s is not implemented"% (cls.__name__,
-                        interface.__name__, name))
+                    raise TypeError(
+                        "class %s declares to implement %s"
+                        " but %s is not implemented" % (cls.__name__, interface.__name__, name)
+                    )
 
         # Check if method is implemented but declared in any interface.
         if reverse is True:
             for name, method in _iterMehods(cls):
                 if name not in declaredByInterfaces:
                     if not _isDeclaredInGetattr(name, cls):
-                        raise TypeError("class %s implements %s"
-                            " but %s is declared in any interface of %s"%
-                            (cls.__name__, name, name, cls.__implements__))
+                        raise TypeError(
+                            "class %s implements %s"
+                            " but %s is declared in any interface of %s"
+                            % (cls.__name__, name, name, cls.__implements__)
+                        )
 
         # Check the methods of the class match the declared interface.
         if signatures is True:
@@ -158,11 +163,13 @@ def checkInterfaces(reverse: bool=True, signatures: bool=True,
                     footprintCls = _signature(method)
                     footprintInterface = _signature(declaredByInterfaces[name])
                     if footprintCls != footprintInterface:
-                        raise TypeError("signature of %s.%s mismatch interface:"
-                            " '%s' vs '%s'"%
-                            (cls.__name__, name, footprintCls, footprintInterface))
+                        raise TypeError(
+                            "signature of %s.%s mismatch interface:"
+                            " '%s' vs '%s'" % (cls.__name__, name, footprintCls, footprintInterface)
+                        )
 
         return cls
+
     return checkClass
 
 
@@ -176,11 +183,10 @@ def adapts(*args):
             """Lookup the parents to inherit of adapts interfaces."""
 
             tree = inspect.getclasstree([cls])
-            return _inherit(cls, '__adapts__', tree, adapts)
-
+            return _inherit(cls, "__adapts__", tree, adapts)
 
         adapts = inheritAdapts(cls, list(args))
-        setattr(cls, '__adapts__', adapts)
+        setattr(cls, "__adapts__", adapts)
 
         return cls
 
@@ -197,11 +203,10 @@ def implements(*args):
             """Lookup the parents to inherit their interfaces."""
 
             tree = inspect.getclasstree([cls])
-            return _inherit(cls, '__implements__', tree, implements)
-
+            return _inherit(cls, "__implements__", tree, implements)
 
         interfaces = inheritImplements(cls, list(args))
-        setattr(cls, '__implements__', interfaces)
+        setattr(cls, "__implements__", interfaces)
 
         return cls
 
@@ -209,7 +214,7 @@ def implements(*args):
 
 
 class Interface(object):
-    INTERNAL = '__INTERNAL__'
-    PUBLIC = '__PUBLIC__'
+    INTERNAL = "__INTERNAL__"
+    PUBLIC = "__PUBLIC__"
 
-    scope = None # Must be defined.
+    scope = None  # Must be defined.

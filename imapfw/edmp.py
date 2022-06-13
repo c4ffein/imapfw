@@ -217,11 +217,12 @@ from imapfw.annotation import ExceptionClass
 from imapfw.concurrency import Queue
 
 
-#TODO: expose
+# TODO: expose
 _SILENT_TIMES = 100
 
 
-class TopicError(Exception): pass
+class TopicError(Exception):
+    pass
 
 
 # Outlined.
@@ -232,8 +233,7 @@ def _raiseError(cls_Exception: ExceptionClass, reason: str):
         raise cls_Exception(reason)
     except NameError as e:
         runtime.ui.exception(e)
-        raise RuntimeError("exception from receiver cannot be raised %s: %s"%
-            (cls_Exception.__name__, reason))
+        raise RuntimeError("exception from receiver cannot be raised %s: %s" % (cls_Exception.__name__, reason))
 
 
 class Channel(object):
@@ -272,22 +272,25 @@ class Emitter(object):
 
             if self._previousTopic != topic:
                 if self._previousTopicCount > 0:
-                    runtime.ui.debugC(EMT, "emitter [%s] sent %i times %s"%
-                        (self._name, _SILENT_TIMES, self._previousTopic))
+                    runtime.ui.debugC(
+                        EMT, "emitter [%s] sent %i times %s" % (self._name, _SILENT_TIMES, self._previousTopic)
+                    )
                 self._previousTopicCount = 0
                 self._previousTopic = topic
-                runtime.ui.debugC(EMT, "emitter [%s] sends %s"%
-                    (self._name, request))
+                runtime.ui.debugC(EMT, "emitter [%s] sends %s" % (self._name, request))
             else:
                 self._previousTopicCount += 1
                 if self._previousTopicCount == 2:
-                    runtime.ui.debugC(EMT, "emitter [%s] sends %s again,"
-                        " further sends for this topic made silent"%
-                        (self._name, request))
+                    runtime.ui.debugC(
+                        EMT,
+                        "emitter [%s] sends %s again,"
+                        " further sends for this topic made silent" % (self._name, request),
+                    )
                 if self._previousTopicCount > (_SILENT_TIMES - 1):
-                    runtime.ui.debugC(EMT,
-                        "emitter [%s] sends for the %ith time %s"%
-                        (self._name, _SILENT_TIMES, self._previousTopic))
+                    runtime.ui.debugC(
+                        EMT,
+                        "emitter [%s] sends for the %ith time %s" % (self._name, _SILENT_TIMES, self._previousTopic),
+                    )
                     self._previousTopicCount = 0
             self._eventQueue.put(request)
 
@@ -303,7 +306,7 @@ class Emitter(object):
                     if error is None:
                         result = self._resultQueue.get_nowait()
                         if result is None:
-                            time.sleep(SLEEP) # Don't eat all CPU.
+                            time.sleep(SLEEP)  # Don't eat all CPU.
                             continue
                         if len(result) > 1:
                             return result
@@ -315,7 +318,7 @@ class Emitter(object):
 
             return sync_event
 
-        if topic.startswith("cached_") or topic.endswith('_sync'):
+        if topic.startswith("cached_") or topic.endswith("_sync"):
             setattr(self, topic, sync(topic))
         else:
             setattr(self, topic, asyn(topic))
@@ -325,7 +328,7 @@ class Emitter(object):
         print("Available events:")
         docstrings = self.str_help_sync()
         for name, docstring in sorted(docstrings.items()):
-            print("- %s: %s"% (name, docstring))
+            print("- %s: %s" % (name, docstring))
 
     help_sync = help
 
@@ -340,12 +343,12 @@ class Receiver(object):
         self._errorQueue = error
 
         self._reactMap = {}
-        self._cache = {} # Cached values.
+        self._cache = {}  # Cached values.
         self._previousTopic = None
         self._previousTopicCount = 0
 
     def _debug(self, msg: str):
-        runtime.ui.debugC(EMT, "receiver [%s] %s"% (self._name, msg))
+        runtime.ui.debugC(EMT, "receiver [%s] %s" % (self._name, msg))
 
     def _help(self, topic: str, args, kwargs):
         docstrings = {}
@@ -361,22 +364,20 @@ class Receiver(object):
         # Enable debug retention if too many messages.
         if self._previousTopic != topic:
             if self._previousTopicCount > 0:
-                self._debug("reacted %i times to '%s'"%
-                    (self._previousTopicCount, self._previousTopic))
+                self._debug("reacted %i times to '%s'" % (self._previousTopicCount, self._previousTopic))
             self._previousTopicCount = 0
             self._previousTopic = topic
-            self._debug("reacting to '%s' with '%s', %s, %s"%
-                (topic, func.__name__, args, kwargs))
+            self._debug("reacting to '%s' with '%s', %s, %s" % (topic, func.__name__, args, kwargs))
 
         else:
             self._previousTopicCount += 1
             if self._previousTopicCount == 2:
-                self._debug("reacting to '%s' again, further messages made"
-                        " silent"% (topic))
+                self._debug("reacting to '%s' again, further messages made" " silent" % (topic))
             if self._previousTopicCount > (_SILENT_TIMES - 1):
                 self._debug(
-                    "reacting for the %ith time to '%s' with '%s', %s, %s"%
-                    (_SILENT_TIMES, topic, func.__name__, args, kwargs))
+                    "reacting for the %ith time to '%s' with '%s', %s, %s"
+                    % (_SILENT_TIMES, topic, func.__name__, args, kwargs)
+                )
                 self._previousTopicCount = 0
 
         return func(*args, **kwargs)
@@ -395,7 +396,7 @@ class Receiver(object):
             topic, args, kwargs = event
             try:
 
-                if topic == 'stopServing':
+                if topic == "stopServing":
                     self._debug("marked as stop serving")
                     return False
 
@@ -405,10 +406,10 @@ class Receiver(object):
                     return True
 
                 # Sync modes.
-                elif topic.startswith("cached_") or topic.endswith('_sync'):
+                elif topic.startswith("cached_") or topic.endswith("_sync"):
                     try:
                         if topic.startswith("cached_"):
-                            #TODO: warn if arguments.
+                            # TODO: warn if arguments.
                             realTopic = topic[7:]
                             if realTopic.endswith("_sync"):
                                 realTopic = realTopic[:-5]
@@ -416,19 +417,17 @@ class Receiver(object):
                             if realTopic in self._cache:
                                 result = self._cache[realTopic]
                             else:
-                                raise TopicError("%s: '%s' is called while"
-                                    " no cached value."% (self._name, topic))
+                                raise TopicError("%s: '%s' is called while" " no cached value." % (self._name, topic))
 
                         else:
-                            realTopic = topic[:-5] # "_sync"
+                            realTopic = topic[:-5]  # "_sync"
 
                             if realTopic in self._reactMap:
                                 result = self._react(realTopic, args, kwargs)
-                            elif realTopic == 'str_help':
+                            elif realTopic == "str_help":
                                 result = self._help(realTopic, args, kwargs)
                             else:
-                                raise TopicError("%s got unkown event '%s'"%
-                                    (self._name, topic))
+                                raise TopicError("%s got unkown event '%s'" % (self._name, topic))
 
                         # Send result back to emitter.
                         if type(result) != tuple:
@@ -440,20 +439,20 @@ class Receiver(object):
                         runtime.ui.error(str(e))
                         self._errorQueue.put((AttributeError, str(e)))
 
-                runtime.ui.error("receiver %s unhandled event %s"%
-                    (self._name, event))
+                runtime.ui.error("receiver %s unhandled event %s" % (self._name, event))
 
             except KeyboardInterrupt:
                 raise
             except Exception as e:
-                runtime.ui.critical("%s unhandled error occurred while"
-                    " reacting to event %s: %s: %s"%
-                    (self._name, event, e.__class__.__name__, e))
+                runtime.ui.critical(
+                    "%s unhandled error occurred while"
+                    " reacting to event %s: %s: %s" % (self._name, event, e.__class__.__name__, e)
+                )
                 runtime.ui.exception(e)
-                if topic.endswith('_sync'):
+                if topic.endswith("_sync"):
                     self._errorQueue.put((e.__class__, str(e)))
 
-        time.sleep(SLEEP) # Don't eat all CPU if caller is looping here.
+        time.sleep(SLEEP)  # Don't eat all CPU if caller is looping here.
         return True
 
 
@@ -464,7 +463,7 @@ class SyncEmitter(object):
         self._emitter = emitter
 
     def __getattr__(self, name):
-        return getattr(self._emitter, "%s_sync"% name)
+        return getattr(self._emitter, "%s_sync" % name)
 
 
 def newEmitterReceiver(debugName: str) -> (Receiver, Emitter):
@@ -477,43 +476,42 @@ def newEmitterReceiver(debugName: str) -> (Receiver, Emitter):
     return receiver, emitter
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Run this demo like this (from the root directory):
     # python3 -m imapfw.edmp
     #
     # We catch exception since it's run as a test in travis.
 
-    _DEBUG = True # Set to True for more output and stack trace on error.
+    _DEBUG = True  # Set to True for more output and stack trace on error.
 
     import sys
     from imapfw.concurrency.concurrency import Concurrency
     from imapfw.ui.tty import TTY
 
-    c = Concurrency('multiprocessing')
+    c = Concurrency("multiprocessing")
     ui = TTY(c.createLock())
     ui.configure()
     if _DEBUG:
-        ui.enableDebugCategories(['emitters'])
+        ui.enableDebugCategories(["emitters"])
     ui.setCurrentWorkerNameFunction(c.getCurrentWorkerNameFunction())
 
-    runtime.set_module('ui', ui)
-    runtime.set_module('concurrency', c)
-
+    runtime.set_module("ui", ui)
+    runtime.set_module("concurrency", c)
 
     def run_async():
         ui.info("******** running run_async()")
 
-        __REMOTE__ = 'http://imapfw.github.io'
-        __CONNECTED__ = 'would be connected'
-        driverReceiver, driverEmitter = newEmitterReceiver('driver')
+        __REMOTE__ = "http://imapfw.github.io"
+        __CONNECTED__ = "would be connected"
+        driverReceiver, driverEmitter = newEmitterReceiver("driver")
 
         def connect(remote, port):
-            print("would connect to %s:%s"% (remote, port))
+            print("would connect to %s:%s" % (remote, port))
             assert remote == __REMOTE__
             assert port == 80
             return __CONNECTED__
 
-        driverReceiver.accept('connect', connect)
+        driverReceiver.accept("connect", connect)
 
         driverEmitter.connect(__REMOTE__, 80)
         driverEmitter.stopServing()
@@ -522,52 +520,49 @@ if __name__ == '__main__':
         react = True
         while react:
             react = driverReceiver.react()
-        print('driver stopped reacting')
-
+        print("driver stopped reacting")
 
     def run_sync():
         ui.info("******** running run_sync()")
 
-        __REMOTE__ = 'http://imapfw.offlineimap.org'
-        __CONNECTED__ = 'would be connected'
+        __REMOTE__ = "http://imapfw.offlineimap.org"
+        __CONNECTED__ = "would be connected"
 
         def runner(receiver):
             def connect(remote, port):
                 """docstring of connect"""
-                print("would connect to %s:%s"% (remote, port))
+                print("would connect to %s:%s" % (remote, port))
                 assert remote == __REMOTE__
                 assert port == 80
                 return __CONNECTED__
 
-            receiver.accept('connect', connect)
+            receiver.accept("connect", connect)
 
             # Blocking loop to react to all events.
             react = True
             while react:
                 react = driverReceiver.react()
-            print('driver stopped reacting')
+            print("driver stopped reacting")
 
-        driverReceiver, driverEmitter = newEmitterReceiver('driver')
+        driverReceiver, driverEmitter = newEmitterReceiver("driver")
 
-
-        worker = c.createWorker(
-            'Worker', runner, (driverReceiver,))
+        worker = c.createWorker("Worker", runner, (driverReceiver,))
         worker.start()
 
         try:
             driverEmitter.connect(__REMOTE__, 80)
             cached = driverEmitter.cached_connect()
-            print("got from cached_connect: %s"% cached)
+            print("got from cached_connect: %s" % cached)
             assert cached == __CONNECTED__
 
             value = driverEmitter.connect_sync(__REMOTE__, 80)
-            print("got from connect_sync: %s"% value)
+            print("got from connect_sync: %s" % value)
             assert value == __CONNECTED__
 
             docstrings = driverEmitter.str_help_sync()
             print("displaying docstrings:")
             for name, doc in docstrings.items():
-                print("- %s: %s"% (name, doc))
+                print("- %s: %s" % (name, doc))
 
             driverEmitter.stopServing()
         except:

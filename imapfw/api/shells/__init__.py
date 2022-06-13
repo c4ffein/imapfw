@@ -9,8 +9,8 @@ and how to structure the underlying code.
 """
 
 __all__ = [
-    'Shell',
-    'DriveDriver',
+    "Shell",
+    "DriveDriver",
 ]
 
 from imapfw.shells import Shell, DriveDriver

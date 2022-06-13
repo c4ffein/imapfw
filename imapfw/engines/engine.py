@@ -24,7 +24,7 @@ dedicated component which is easy to re-use. Combine compenents into object
 
 from imapfw import runtime
 
-#TODO: engines debug logs.
+# TODO: engines debug logs.
 from imapfw.constants import WRK
 
 # Interfaces.
@@ -67,7 +67,7 @@ class SyncEngineInterface(Interface):
 @implements(SyncEngineInterface)
 class SyncEngine(object):
     def __init__(self, workerName: str):
-        self._exitCode = -1 # Force the run to set a valid exit code.
+        self._exitCode = -1  # Force the run to set a valid exit code.
         self._gotTask = False
         self.workerName = workerName
 
@@ -76,18 +76,17 @@ class SyncEngine(object):
             self.setExitCode(0)
         else:
             if self._exitCode < 0:
-                runtime.ui.critical("%s exit code was not set correctly"%
-                    self.workerName)
+                runtime.ui.critical("%s exit code was not set correctly" % self.workerName)
                 self.setExitCode(99)
 
     def debug(self, msg: str) -> None:
-        runtime.ui.debugC(WRK, "%s: %s"% (self.workerName, msg))
+        runtime.ui.debugC(WRK, "%s: %s" % (self.workerName, msg))
 
     def getExitCode(self) -> int:
         return self._exitCode
 
     def processing(self, task: str) -> None:
-        runtime.ui.infoL(2, "%s processing: %s"% (self.workerName, task))
+        runtime.ui.infoL(2, "%s processing: %s" % (self.workerName, task))
         self._gotTask = True
 
     def setExitCode(self, exitCode: int) -> None:

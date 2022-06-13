@@ -32,30 +32,27 @@ from imapfw.types.folder import Folders, Folder
 
 class TestMaildirDriver(unittest.TestCase):
     def setUp(self):
-        confBase = { 'sep': '/' }
+        confBase = {"sep": "/"}
         confA, confB = confBase.copy(), confBase.copy()
 
-        confA['path'] = os.path.join(libcore.testingPath(), 'maildirs', 'recursive_A')
-        confB['path'] = os.path.join(libcore.testingPath(), 'maildirs', 'recursive_B')
+        confA["path"] = os.path.join(libcore.testingPath(), "maildirs", "recursive_A")
+        confB["path"] = os.path.join(libcore.testingPath(), "maildirs", "recursive_B")
 
-        self.driverA = loadDriver(drivers.Maildir, 'MaildirA', confA)
-        self.driverB = loadDriver(drivers.Maildir, 'MaildirB', confB)
+        self.driverA = loadDriver(drivers.Maildir, "MaildirA", confA)
+        self.driverB = loadDriver(drivers.Maildir, "MaildirB", confB)
 
     def test_getFolders_of_recursive_A(self):
         folders = self.driverA.getFolders()
-        expected = Folders(Folder(b'/'))
+        expected = Folders(Folder(b"/"))
         self.assertEqual(folders, expected)
 
     def test_getFolders_of_recursive_B(self):
         folders = self.driverB.getFolders()
         expected = Folders(
-            Folder(b'/'),
-            Folder(b'subfolder_A'),
-            Folder(b'subfolder_B'),
-            Folder(b'subfolder_B/subsubfolder_X'),
-            )
+            Folder(b"/"), Folder(b"subfolder_A"), Folder(b"subfolder_B"), Folder(b"subfolder_B/subsubfolder_X"),
+        )
         self.assertEqual(folders, expected)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main(verbosity=2)

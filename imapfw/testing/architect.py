@@ -12,7 +12,7 @@ from imapfw.edmp import Emitter
 
 class TestArchitect(unittest.TestCase):
     def setUp(self):
-        self.arc = Architect('testWorker')
+        self.arc = Architect("testWorker")
 
     def test_00_start_stop(self):
         def runner():
@@ -32,7 +32,7 @@ class TestArchitect(unittest.TestCase):
 
 class TestDriverArchitect(unittest.TestCase):
     def setUp(self):
-        self.arc = DriverArchitect('Driver')
+        self.arc = DriverArchitect("Driver")
 
     def test_00_start_stop(self):
         self.arc.init()
@@ -53,7 +53,7 @@ class TestDriverArchitect(unittest.TestCase):
 
 class TestDriversArchitect(unittest.TestCase):
     def setUp(self):
-        self.arc = DriversArchitect('Drivers', 3)
+        self.arc = DriversArchitect("Drivers", 3)
 
     def test_00_start_stop(self):
         self.arc.init()
@@ -76,13 +76,14 @@ class TestDriversArchitect(unittest.TestCase):
         self.assertIsInstance(emitter, Emitter)
         self.assertRaises(KeyError, self.arc.getEmitter, 3)
 
+
 class TestEngineArchitect(unittest.TestCase):
     def setUp(self):
         def runner():
             pass
 
         self.runner = runner
-        self.arc = EngineArchitect('Engine')
+        self.arc = EngineArchitect("Engine")
 
     def test_00_start_stop(self):
         self.arc.init()
@@ -102,13 +103,13 @@ class TestEngineArchitect(unittest.TestCase):
         self.assertIsInstance(emitter, Emitter)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     from imapfw.concurrency import Concurrency
     from imapfw.ui.tty import TTY
 
-    runtime.set_module('concurrency', Concurrency('multiprocessing'))
+    runtime.set_module("concurrency", Concurrency("multiprocessing"))
     ui = TTY(runtime.concurrency.createLock())
     ui.configure()
     # ui.enableDebugCategories(['architects'])
-    runtime.set_module('ui', ui)
+    runtime.set_module("ui", ui)
     unittest.main(verbosity=2)

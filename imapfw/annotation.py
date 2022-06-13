@@ -10,21 +10,21 @@ Where Python3 annotations must be defined.
 from typing import Any, Dict, Iterable, List, Tuple, TypeVar, Union
 
 # Global.
-Function = TypeVar('Function')
+Function = TypeVar("Function")
 
 # actions.clioptions,
-ActionClass = TypeVar('ActionClass')
+ActionClass = TypeVar("ActionClass")
 
 # edmp,
-ExceptionClass = TypeVar('Exception class')
+ExceptionClass = TypeVar("Exception class")
 
 # interface,
 Requirement = Any
-InterfaceClass = TypeVar('Interface class')
-InterfaceDefinitions = Dict[InterfaceClass, Tuple['arguments']]
+InterfaceClass = TypeVar("Interface class")
+InterfaceDefinitions = Dict[InterfaceClass, Tuple["arguments"]]
 
 # drivers.driver,
-DriverClass = TypeVar('Driver based class')
+DriverClass = TypeVar("Driver based class")
 
 # actions.interface,
-ExceptionClass = TypeVar('Exception class')
+ExceptionClass = TypeVar("Exception class")

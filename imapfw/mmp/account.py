@@ -38,7 +38,6 @@ class AccountManager(Manager):
     The code of this object is run by the receiver into the account worker.
     All the returned values are sent from the receiver to the emitter."""
 
-
     def __init__(self, workerName, accountTasks, leftEmitter, rightEmitter):
         super(AccountManager, self).__init__()
 
@@ -50,27 +49,23 @@ class AccountManager(Manager):
         self._engine = None
 
     def _debug(self, msg):
-        self.ui.debugC(MGR, "%s: %s"% (self._name, msg))
+        self.ui.debugC(MGR, "%s: %s" % (self._name, msg))
 
     def ex_action_getNextAccountName(self, engineName):
         self._accountName = self._accountTasks.get_nowait()
 
         if self._accountName is None:
-            return False # Flag that there is no more task.
+            return False  # Flag that there is no more task.
 
         # Build the engine.
-        if engineName is 'SyncAccount':
+        if engineName is "SyncAccount":
             # Build the syncAccount engine which consumes the accountTasks.
-            self._engine = SyncAccount(
-                self._workerName,
-                self._leftEmitter,
-                self._rightEmitter,
-                )
+            self._engine = SyncAccount(self._workerName, self._leftEmitter, self._rightEmitter,)
 
-        return True # Receiver is ready for a run.
+        return True  # Receiver is ready for a run.
 
     def ex_action_run(self):
-        self.ui.debug('would run the engine')
+        self.ui.debug("would run the engine")
         return None, None, None
         self._engine.run(self._accountName)
         return self._engine.getResults()

@@ -47,31 +47,30 @@ class Examine(object):
                 self._number += 1
                 return self._number
 
-            def line(self, line: str=''):
-                self.content[self._getNumber()] = ('line', (line,))
+            def line(self, line: str = ""):
+                self.content[self._getNumber()] = ("line", (line,))
 
-            def list(self, elements: list=[]):
-                self.content[self._getNumber()] = ('list', (elements,))
+            def list(self, elements: list = []):
+                self.content[self._getNumber()] = ("list", (elements,))
 
-            def title(self, title: str, level: int=1):
-                self.content[self._getNumber()] = ('title', (title, level))
+            def title(self, title: str, level: int = 1):
+                self.content[self._getNumber()] = ("title", (title, level))
 
             def markdown(self):
                 for lineDef in self.content.values():
                     kind, args = lineDef
 
-                    if kind == 'title':
+                    if kind == "title":
                         title, level = args
-                        prefix = '#' * level
-                        print("\n%s %s\n"% (prefix, title))
+                        prefix = "#" * level
+                        print("\n%s %s\n" % (prefix, title))
 
-                    if kind == 'list':
+                    if kind == "list":
                         for elem in args[0]:
-                            print("* %s"% elem)
+                            print("* %s" % elem)
 
-                    if kind == 'line':
+                    if kind == "line":
                         print(args[0])
-
 
         cls_accounts = runtime.rascal.getAll([Account])
 
@@ -86,14 +85,11 @@ class Examine(object):
             if isinstance(repository, DriverInterface):
                 continue
             try:
-                repository.fw_insertController(ExamineController,
-                    {'report': report})
+                repository.fw_insertController(ExamineController, {"report": report})
                 driver = repository.fw_getDriver()
 
-                report.title("Repository %s (driver %s)"%
-                    (repository.getClassName(), driver.getDriverClassName()))
-                report.line("controllers: %s"%
-                    [x.__name__ for x in repository.controllers])
+                report.title("Repository %s (driver %s)" % (repository.getClassName(), driver.getDriverClassName()))
+                report.line("controllers: %s" % [x.__name__ for x in repository.controllers])
 
                 driver.connect()
                 driver.getFolders()
@@ -101,8 +97,8 @@ class Examine(object):
                 report = driver.fw_getReport()
             except Exception as e:
                 raise
-                self.ui.warn("got %s %s"% (repr(e), str(e)))
+                self.ui.warn("got %s %s" % (repr(e), str(e)))
         report.markdown()
 
 
-Parser.addAction('examine', Examine, help="examine repositories")
+Parser.addAction("examine", Examine, help="examine repositories")

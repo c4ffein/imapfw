@@ -10,7 +10,7 @@ from imapfw.interface import implements, Interface, checkInterfaces
 from imapfw.annotation import List
 
 
-#TODO: interface.
+# TODO: interface.
 class MessageAttributes(object):
     def __init__(self):
         self.flags = []
@@ -26,11 +26,11 @@ class MessageAttributes(object):
         self.flags = flags
 
     def setInternaldate(self, internaldate: str):
-        #TODO: make python date
+        # TODO: make python date
         self.internaldate = internaldate
 
 
-#TODO: interface.
+# TODO: interface.
 @total_ordering
 class Message(object):
     def __init__(self, uid: int):
@@ -40,7 +40,7 @@ class Message(object):
         self.attributes = MessageAttributes()
 
     # def __bytes__(self):
-        # return self._name
+    # return self._name
 
     def __eq__(self, other):
         return self.uid == other
@@ -52,7 +52,7 @@ class Message(object):
         return self.uid < other
 
     def __repr__(self):
-        return "<Message object '%i'>"% self.uid
+        return "<Message object '%i'>" % self.uid
 
     def __str__(self):
         return str(self.uid)
@@ -73,7 +73,7 @@ class Message(object):
         self.attributes = attributes
 
 
-#TODO: interface.
+# TODO: interface.
 class Messages(UserDict):
     """A collection of messages, by UID."""
 
@@ -91,12 +91,12 @@ class Messages(UserDict):
         E.g.: '1,3:7,9'
         """
 
-        uids = [] # List of UIDs and coalesced sub-sequences ['1', '3:7', '9'].
+        uids = []  # List of UIDs and coalesced sub-sequences ['1', '3:7', '9'].
 
         def coalesce(start, end):
             if start == end:
-                return str(start) # Non-coalesced UID: '1'.
-            return "%s:%s"% (start, end) # Coalesced sub-sequence: '3:7'.
+                return str(start)  # Non-coalesced UID: '1'.
+            return "%s:%s" % (start, end)  # Coalesced sub-sequence: '3:7'.
 
         start = None
         end = None
@@ -111,10 +111,10 @@ class Messages(UserDict):
                 continue
 
             uids.append(coalesce(start, end))
-            start, end = uid, uid # Current uid is the next item to coalesce.
+            start, end = uid, uid  # Current uid is the next item to coalesce.
         uids.append(coalesce(start, end))
 
-        return ','.join(uids) # '1,3:7,9'
+        return ",".join(uids)  # '1,3:7,9'
 
     def getAttributes(self, uid: int) -> MessageAttributes:
         return self.data[uid].getAttributes()

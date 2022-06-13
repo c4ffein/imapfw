@@ -1,7 +1,7 @@
 # The MIT License (MIT).
 # Copyright (c) 2015, Nicolas Sebrecht & contributors.
 
-import imp #TODO: use library importlib instead of deprecated imp.
+import imp  # TODO: use library importlib instead of deprecated imp.
 
 from imapfw.api import types
 
@@ -9,8 +9,8 @@ from imapfw.api import types
 from typing import List, TypeVar
 
 
-Function = TypeVar('Function')
-Class = TypeVar('Class')
+Function = TypeVar("Function")
+Class = TypeVar("Class")
 
 
 class Rascal(object):
@@ -23,7 +23,7 @@ class Rascal(object):
     illusion he's living a real life while we keep full control of him."""
 
     def __init__(self):
-        self._rascal = {} # The module.
+        self._rascal = {}  # The module.
         # Cached literals.
         self._mainConf = None
 
@@ -31,8 +31,7 @@ class Rascal(object):
         try:
             return type(obj) == dict
         except:
-            raise TypeError("'%s' must be a dictionnary, got '%s'"%
-                (obj.__name__, type(obj)))
+            raise TypeError("'%s' must be a dictionnary, got '%s'" % (obj.__name__, type(obj)))
 
     def _getHook(self, name: str) -> Function:
         try:
@@ -50,13 +49,12 @@ class Rascal(object):
             if issubclass(cls, expectedType):
                 return cls
 
-        raise TypeError("class '%s' is not a sub-class of '%s'"%
-            (name, expectedTypes))
+        raise TypeError("class '%s' is not a sub-class of '%s'" % (name, expectedTypes))
 
     def getAll(self, targetTypes: List[Class]) -> List[Class]:
         classes = []
         for literal in dir(self._rascal):
-            if literal.startswith('_'):
+            if literal.startswith("_"):
                 continue
             try:
                 classes.append(self.get(literal, targetTypes))
@@ -65,56 +63,53 @@ class Rascal(object):
         return classes
 
     def getExceptionHook(self) -> Function:
-        return self._getHook('exceptionHook')
+        return self._getHook("exceptionHook")
 
     def getFunction(self, name: str) -> Function:
         func = self._getLiteral(name)
         if not callable(func):
-            raise TypeError("function expected for '%s'"% name)
+            raise TypeError("function expected for '%s'" % name)
         return func
 
     def getMaxConnections(self, accountName: str) -> int:
         def getValue(repository):
             try:
-                return int(repository.conf.get('max_connections'))
+                return int(repository.conf.get("max_connections"))
             except AttributeError:
                 return 999
 
         account = self.get(accountName, [types.Account])
-        max_sync = min(getValue(account.left),
-            getValue(account.right))
+        max_sync = min(getValue(account.left), getValue(account.right))
         return max_sync
 
     def getMaxSyncAccounts(self) -> int:
-        return int(self._mainConf.get('max_sync_accounts'))
+        return int(self._mainConf.get("max_sync_accounts"))
 
     def getPostHook(self) -> Function:
-        return self._getHook('postHook')
+        return self._getHook("postHook")
 
     def getPreHook(self) -> Function:
-        return self._getHook('preHook')
+        return self._getHook("preHook")
 
     def getSettings(self, name: str) -> dict:
         literal = getattr(self._rascal, name)
         if not isinstance(literal, dict):
-            raise TypeError("expected dict for '%s', got '%s'"%
-                (name, type(literal)))
+            raise TypeError("expected dict for '%s', got '%s'" % (name, type(literal)))
         return literal
 
     def load(self, path: str) -> None:
         # Create empty module.
-        rascal_mod = imp.new_module('rascal')
+        rascal_mod = imp.new_module("rascal")
         rascal_mod.__file__ = path
 
         with open(path) as rascal_file:
-            exec(compile(
-                rascal_file.read(), path, 'exec'), rascal_mod.__dict__)
+            exec(compile(rascal_file.read(), path, "exec"), rascal_mod.__dict__)
         self._rascal = rascal_mod
 
-        self._mainConf = self.getSettings('MainConf')
+        self._mainConf = self.getSettings("MainConf")
 
         # Turn accounts definitions from MainConf into global of rascal
         # literals.
-        if 'accounts' in self._mainConf:
-            for accountDict in self._mainConf.get('accounts'):
-                setattr(self._rascal, accountDict.get('name'), accountDict)
+        if "accounts" in self._mainConf:
+            for accountDict in self._mainConf.get("accounts"):
+                setattr(self._rascal, accountDict.get("name"), accountDict)

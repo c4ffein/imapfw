@@ -40,8 +40,7 @@ from imapfw.types.folder import Folders
 class SyncArchitect(object):
     """Architect designed to sync one account."""
 
-    def __init__(self, workerName: str, accountTasks: Queue,
-            accountEngineName: str, folderEngineName: str):
+    def __init__(self, workerName: str, accountTasks: Queue, accountEngineName: str, folderEngineName: str):
         self.workerName = workerName
         self.accountTasks = accountTasks
         self.accountEngineName = accountEngineName
@@ -51,8 +50,8 @@ class SyncArchitect(object):
         self.foldersArch = None
         self.receiver = None
         self.engine = None
-        self.exitCode = -1 # Let caller know we are busy.
-        self.foldersExitCode = -1 # Max from all folders architects.
+        self.exitCode = -1  # Let caller know we are busy.
+        self.foldersExitCode = -1  # Max from all folders architects.
         self.syncFoldersDone = False
 
     def _on_accountEngineDone(self, exitCode: int) -> None:
@@ -73,19 +72,15 @@ class SyncArchitect(object):
     def _on_areSyncFoldersDone(self) -> bool:
         return self.syncFoldersDone
 
-    def _on_syncFolders(self, accountName: str, maxFolderWorkers: int,
-            folders: Folders) -> None:
+    def _on_syncFolders(self, accountName: str, maxFolderWorkers: int, folders: Folders) -> None:
         """Start syncing of folders in async mode."""
 
         self.syncFoldersDone = False
         self.foldersArch = SyncFoldersArchitect(self.workerName, accountName)
         # Let the foldersArchitect re-use our drivers.
         self.foldersArch.start(
-            maxFolderWorkers,
-            folders,
-            self.engineArch.getLeftEmitter(),
-            self.engineArch.getRightEmitter(),
-            )
+            maxFolderWorkers, folders, self.engineArch.getLeftEmitter(), self.engineArch.getRightEmitter(),
+        )
 
     def _setExitCode(self, exitCode: int) -> None:
         self.exitCode = max(exitCode, self.exitCode)
@@ -99,16 +94,13 @@ class SyncArchitect(object):
         self.receiver, emitter = newEmitterReceiver(self.workerName)
 
         # Setup events handling.
-        self.receiver.accept('areSyncFoldersDone', self._on_areSyncFoldersDone)
-        self.receiver.accept('accountEngineDone', self._on_accountEngineDone)
-        self.receiver.accept('syncFolders', self._on_syncFolders)
+        self.receiver.accept("areSyncFoldersDone", self._on_areSyncFoldersDone)
+        self.receiver.accept("accountEngineDone", self._on_accountEngineDone)
+        self.receiver.accept("syncFolders", self._on_syncFolders)
 
         self.engine = SyncAccounts(
-            self.workerName,
-            emitter,
-            self.engineArch.getLeftEmitter(),
-            self.engineArch.getRightEmitter(),
-            )
+            self.workerName, emitter, self.engineArch.getLeftEmitter(), self.engineArch.getRightEmitter(),
+        )
 
     def getExitCode(self) -> int:
         """Caller must monitor the exit code to know when we are done.
@@ -128,15 +120,14 @@ class SyncArchitect(object):
                     self.foldersExitCode = max(exitCode, self.foldersExitCode)
 
         except Exception as e:
-            #TODO: honor rascal.
-            runtime.ui.critical("%s got unexpected error '%s'"%
-                (self.workerName, e))
+            # TODO: honor rascal.
+            runtime.ui.critical("%s got unexpected error '%s'" % (self.workerName, e))
             runtime.ui.exception(e)
             # Stop here.
             self.engineArch.kill()
             if self.foldersArch is not None:
                 self.foldersArch.kill()
-            self._setExitCode(10) # See manual.
+            self._setExitCode(10)  # See manual.
 
         return self.exitCode
 
@@ -144,9 +135,8 @@ class SyncArchitect(object):
         assert self.engineArch is not None
 
         self.engineArch.start(
-            topRunner,
-            (self.workerName, self.engine.run, self.accountTasks),
-            )
+            topRunner, (self.workerName, self.engine.run, self.accountTasks),
+        )
 
 
 class SyncAccountsArchitect(object):
@@ -157,7 +147,7 @@ class SyncAccountsArchitect(object):
     def __init__(self, accountList: Iterable[str]):
         self.accountList = accountList
 
-        self.syncArchs = [] # List of SyncArchitect.
+        self.syncArchs = []  # List of SyncArchitect.
         self.exitCode = -1
         self.accountTasks = None
 
@@ -183,12 +173,11 @@ class SyncAccountsArchitect(object):
 
         # Setup the architecture.
         for i in range(maxConcurrentAccounts):
-            workerName = "Account.%i"% i
+            workerName = "Account.%i" % i
 
-            syncArch = SyncArchitect(workerName, accountTasks,
-                'SyncAccountEngine', 'SyncFolderEngine')
+            syncArch = SyncArchitect(workerName, accountTasks, "SyncAccountEngine", "SyncFolderEngine")
             syncArch.init()
-            syncArch.start() # Async.
+            syncArch.start()  # Async.
             self.syncArchs.append(syncArch)
 
     def run(self) -> int:
@@ -202,5 +191,5 @@ class SyncAccountsArchitect(object):
                     self.syncArchs.remove(architect)
 
         if self.exitCode < 0:
-            return 99 # See manual.
+            return 99  # See manual.
         return self.exitCode

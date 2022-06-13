@@ -9,8 +9,8 @@ and how to structure the underlying code.
 """
 
 __all__ = [
-    'SyncAccounts',
-    'SyncFolders',
+    "SyncAccounts",
+    "SyncFolders",
 ]
 
 from imapfw.engines import SyncAccounts, SyncFolders

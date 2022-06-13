@@ -38,6 +38,7 @@ class ArchitectInterface(Interface):
     def stop(self) -> None:
         """Stop worker."""
 
+
 @debugArchitect
 @implements(ArchitectInterface)
 class Architect(object):
@@ -51,10 +52,8 @@ class Architect(object):
         self.worker.kill()
 
     def start(self, runner: Function, runnerArgs: tuple) -> None:
-        self.worker = runtime.concurrency.createWorker(
-            self.workerName, runner, runnerArgs)
+        self.worker = runtime.concurrency.createWorker(self.workerName, runner, runnerArgs)
         self.worker.start()
 
     def stop(self) -> None:
         self.worker.join()
-

@@ -9,13 +9,13 @@ and how to structure the underlying code.
 """
 
 __all__ = [
-    'Controller',
-    'Duplicate',
-    'Examine',
-    'FakeDriver',
-    'Filter',
-    'NameTrans',
-    'Transcoder',
+    "Controller",
+    "Duplicate",
+    "Examine",
+    "FakeDriver",
+    "Filter",
+    "NameTrans",
+    "Transcoder",
 ]
 
 from imapfw.controllers.controller import Controller

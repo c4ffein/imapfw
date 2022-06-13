@@ -24,36 +24,35 @@ from imapfw import runtime
 
 from .controller import Controller
 
-#TODO
+# TODO
 class Duplicate(Controller):
     """Controller to duplicate writes to another driver."""
 
     conf = None
 
     def fw_initController(self):
-        self.duplicateDriver = None #TODO: setup driver...
+        self.duplicateDriver = None  # TODO: setup driver...
         self.ui = runtime.ui
 
-        self.mode = self.conf.get('exception').lower() # fatal, warn or pass.
+        self.mode = self.conf.get("exception").lower()  # fatal, warn or pass.
 
     def __getattr__(self, name):
-        raise AttributeError("method '%s' missing in Duplicate controller"% name)
+        raise AttributeError("method '%s' missing in Duplicate controller" % name)
 
     def _call(self, name, *args, **kwargs):
         try:
             values = getattr(self.duplicateDriver, name)(*args, **kwargs)
         except Exception as e:
-            if self.mode == 'pass':
+            if self.mode == "pass":
                 pass
-            elif self.mode == 'warn':
-                self.ui.warn('TODO: warning not implemented')
+            elif self.mode == "warn":
+                self.ui.warn("TODO: warning not implemented")
             else:
                 raise
         finally:
             return getattr(self.driver, name)(*args, **kwargs)
 
     def connect(self):
-            values = self._call('connect')
+        values = self._call("connect")
 
-    #TODO: implement DriverInterface.
-
+    # TODO: implement DriverInterface.

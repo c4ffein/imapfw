@@ -24,7 +24,7 @@ class SyncFolderArchitect(object):
         self.workerName = workerName
         self.accountName = accountName
 
-        self._debug("__init__(%s, %s)"% (workerName, accountName))
+        self._debug("__init__(%s, %s)" % (workerName, accountName))
 
         self.worker = None
         self.receiver = None
@@ -37,10 +37,10 @@ class SyncFolderArchitect(object):
         self.reuseRight = False
 
     def _debug(self, msg) -> None:
-        runtime.ui.debugC(ARC, "%s folderArchitect %s"% (self.workerName, msg))
+        runtime.ui.debugC(ARC, "%s folderArchitect %s" % (self.workerName, msg))
 
     def _on_stop(self, exitCode: int) -> None:
-        self._debug("stop(%i)"% exitCode)
+        self._debug("stop(%i)" % exitCode)
         """Stop architects when approppriate.
 
         When the account engine started us with both side drivers we must NOT
@@ -54,18 +54,17 @@ class SyncFolderArchitect(object):
         self._setExitCode(exitCode)
 
     def _setExitCode(self, exitCode: int) -> None:
-        self._debug("_setExitCode(%i)"% exitCode)
+        self._debug("_setExitCode(%i)" % exitCode)
         self.exitCode = max(exitCode, self.exitCode)
 
     def getExitCode(self) -> int:
         try:
             self.receiver.react()
         except Exception as e:
-            runtime.ui.critical("folder receiver [%s] got unexpected error: %s"%
-                (self.workerName, e))
+            runtime.ui.critical("folder receiver [%s] got unexpected error: %s" % (self.workerName, e))
             runtime.ui.exception(e)
             self.kill()
-            self._setExitCode(10) # See manual.
+            self._setExitCode(10)  # See manual.
         return self.exitCode
 
     def kill(self) -> None:
@@ -75,15 +74,14 @@ class SyncFolderArchitect(object):
         self.rightArch.stop()
         self.architect.kill()
 
-    def start(self, folderTasks: Queue,
-            left: Emitter, right: Emitter) -> None:
+    def start(self, folderTasks: Queue, left: Emitter, right: Emitter) -> None:
 
         self._debug("start()")
 
         self.architect = Architect(self.workerName)
 
         if left is None:
-            self.leftArch = DriverArchitect("%s.Driver.0"% self.workerName)
+            self.leftArch = DriverArchitect("%s.Driver.0" % self.workerName)
             self.leftArch.init()
             self.leftArch.start()
             left = self.leftArch.getEmitter()
@@ -91,7 +89,7 @@ class SyncFolderArchitect(object):
             self.reuseLeft = True
             self.leftArch = ReuseDriverArchitect(left)
         if right is None:
-            self.rightArch = DriverArchitect("%s.Driver.1"% self.workerName)
+            self.rightArch = DriverArchitect("%s.Driver.1" % self.workerName)
             self.rightArch.init()
             self.rightArch.start()
             right = self.rightArch.getEmitter()
@@ -100,16 +98,14 @@ class SyncFolderArchitect(object):
             self.rightArch = ReuseDriverArchitect(right)
 
         receiver, emitter = newEmitterReceiver(self.workerName)
-        receiver.accept('stop', self._on_stop)
+        receiver.accept("stop", self._on_stop)
         self.receiver = receiver
 
-        engine = SyncFolders(self.workerName, emitter, left, right,
-            self.accountName)
+        engine = SyncFolders(self.workerName, emitter, left, right, self.accountName)
 
         self.architect.start(
-            topRunner,
-            (self.workerName, engine.run, folderTasks),
-            )
+            topRunner, (self.workerName, engine.run, folderTasks),
+        )
 
 
 class SyncFoldersArchitect(object):
@@ -124,13 +120,11 @@ class SyncFoldersArchitect(object):
         self.folderArchitects = []
         self.exitCode = -1
 
-
     def _debug(self, msg) -> None:
-        runtime.ui.debugC(ARC, "%s foldersArchitect %s %s"%
-            (self.accountWorkerName, self.accountName, msg))
+        runtime.ui.debugC(ARC, "%s foldersArchitect %s %s" % (self.accountWorkerName, self.accountName, msg))
 
     def _setExitCode(self, exitCode) -> None:
-        self._debug("_setExitCode(%i)"% exitCode)
+        self._debug("_setExitCode(%i)" % exitCode)
         if exitCode > self.exitCode:
             self.exitCode = exitCode
 
@@ -140,13 +134,12 @@ class SyncFoldersArchitect(object):
             if exitCode >= 0:
                 self.folderArchitects.remove(folderArchitect)
                 self._setExitCode(exitCode)
-                self._debug("%i architect(s) remaining"%
-                    len(self.folderArchitects))
+                self._debug("%i architect(s) remaining" % len(self.folderArchitects))
 
         if len(self.folderArchitects) < 1:
             return self.exitCode
         else:
-            return -1 # Let caller know workers are busy.
+            return -1  # Let caller know workers are busy.
 
     def kill(self) -> None:
         self._debug("kill()")
@@ -154,11 +147,9 @@ class SyncFoldersArchitect(object):
             folderArchitect.kill()
             self.folderArchitects.remove(folderArchitect)
 
-    def start(self, maxFolderWorkers: int, folders: Folders,
-            left: Emitter=None, right: Emitter=None) -> None:
+    def start(self, maxFolderWorkers: int, folders: Folders, left: Emitter = None, right: Emitter = None) -> None:
 
-        self._debug("start(%i, %s, %s, %s)"% (maxFolderWorkers,
-            folders, repr(left), repr(right)))
+        self._debug("start(%i, %s, %s, %s)" % (maxFolderWorkers, folders, repr(left), repr(right)))
 
         folderTasks = runtime.concurrency.createQueue()
         for folder in folders:
@@ -168,9 +159,9 @@ class SyncFoldersArchitect(object):
             pass
 
         for i in range(maxFolderWorkers):
-            workerName = "%s.Folder.%i"% (self.accountWorkerName, i)
+            workerName = "%s.Folder.%i" % (self.accountWorkerName, i)
 
             folderArchitect = SyncFolderArchitect(workerName, self.accountName)
             folderArchitect.start(folderTasks, left, right)
-            left, right = None, None # Don't re-use drivers too much. :-)
+            left, right = None, None  # Don't re-use drivers too much. :-)
             self.folderArchitects.append(folderArchitect)

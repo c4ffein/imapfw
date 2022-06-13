@@ -16,12 +16,11 @@ def runHook(hookFunc, *args):
         def stop(self):
             return self._stop
 
-
     hookName = hookFunc.__name__
 
     # Don't run hooks for action unitTests.
-    if hookName == 'preHook':
-        if args[0] == 'unitTests':
+    if hookName == "preHook":
+        if args[0] == "unitTests":
             return False
 
     hook = Hook()
@@ -29,7 +28,7 @@ def runHook(hookFunc, *args):
 
     thread = Thread(name=hookName, target=hookFunc, args=args, daemon=True)
     thread.start()
-    thread.join(10) # TODO: get timeout from rascal.
+    thread.join(10)  # TODO: get timeout from rascal.
 
     return hook.stop()
 
@@ -50,6 +49,7 @@ def xTrans(thing, transforms):
         thing = f(thing)
     return thing
 
+
 def expandPath(path):
     xtrans = [os.path.expanduser, os.path.expandvars, os.path.abspath]
     return xTrans(path, xtrans)
@@ -62,8 +62,8 @@ def dictValueFromPath(dictionnary, path):
                 newDict = tmpDict.get(lst_path.pop(0))
                 return getItem(newDict, lst_path)
             else:
-                raise KeyError('invalid path')
+                raise KeyError("invalid path")
         return tmpDict
 
-    lst_path = path.split('.')
+    lst_path = path.split(".")
     return getItem(dictionnary, lst_path)

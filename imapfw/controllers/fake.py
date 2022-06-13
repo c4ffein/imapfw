@@ -11,26 +11,19 @@ class FakeDriver(Controller):
 
     conf = None
 
-    ImapConf = {
-        'folders': [b'INBOX', b'INBOX/spam', b'INBOX/outbox',
-            b'INBOX/sp&AOk-cial',
-        ]
-    }
+    ImapConf = {"folders": [b"INBOX", b"INBOX/spam", b"INBOX/outbox", b"INBOX/sp&AOk-cial",]}
 
-    MaildirConf = {
-        'folders': [b'INBOX', b'INBOX/maidir_archives']
-    }
+    MaildirConf = {"folders": [b"INBOX", b"INBOX/maidir_archives"]}
 
     def __getattr__(self, name):
-        if name.startswith('fw_'):
+        if name.startswith("fw_"):
             return getattr(self.driver, name)
-        message = ("FakeDriver %s did not handle call to '%s'"%
-                (self.getClassName(), name))
+        message = "FakeDriver %s did not handle call to '%s'" % (self.getClassName(), name)
         raise AttributeError(message)
 
     def _folders(self):
         folders = Folders()
-        for folderName in self.conf.get('folders'):
+        for folderName in self.conf.get("folders"):
             folders.append(Folder(folderName))
         return folders
 
@@ -38,7 +31,7 @@ class FakeDriver(Controller):
         return True
 
     def getCapability(self):
-        return ["TODO=CAPABILITY"] #TODO
+        return ["TODO=CAPABILITY"]  # TODO
 
     def getClassName(self):
         return self.__class__.__name__
@@ -50,7 +43,7 @@ class FakeDriver(Controller):
         return self._folders()
 
     def getNamespace(self):
-        return "TODO" #TODO
+        return "TODO"  # TODO
 
     def getRepositoryName(self):
         return self.repositoryName
@@ -68,7 +61,7 @@ class FakeDriver(Controller):
         return True
 
     def search(self, conditions):
-        return Messages() #TODO
+        return Messages()  # TODO
 
     def select(self, folder):
-        return True #TODO
+        return True  # TODO

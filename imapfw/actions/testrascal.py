@@ -59,4 +59,4 @@ class TestRascal(object):
             print("TODO: run tests for the repositories and drivers.")
 
 
-Parser.addAction('testRascal', TestRascal, help="test your rascal")
+Parser.addAction("testRascal", TestRascal, help="test your rascal")

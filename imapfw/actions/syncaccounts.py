@@ -27,14 +27,14 @@ class SyncAccounts(object):
 
     def exception(self, e: ExceptionClass) -> None:
         self.exitCode = 3
-        raise NotImplementedError #TODO
+        raise NotImplementedError  # TODO
 
     def getExitCode(self) -> int:
         return self.exitCode
 
     def init(self, parser: Parser) -> None:
-        self.accountList = parser.get('accounts')
-        self.engineName = parser.get('engine')
+        self.accountList = parser.get("accounts")
+        self.engineName = parser.get("engine")
 
     def run(self) -> None:
         """Enable the syncing of the accounts in an async fashion.
@@ -42,10 +42,7 @@ class SyncAccounts(object):
         Code here is about setting up the environment, start the jobs and
         monitor."""
 
-
-        maxConcurrentAccounts = min(
-            runtime.rascal.getMaxSyncAccounts(),
-            len(self.accountList))
+        maxConcurrentAccounts = min(runtime.rascal.getMaxSyncAccounts(), len(self.accountList))
 
         accountsArchitect = SyncAccountsArchitect(self.accountList)
         accountsArchitect.start(maxConcurrentAccounts)
@@ -53,16 +50,17 @@ class SyncAccounts(object):
 
 
 # syncAccounts CLI options.
-actionParser = Parser.addAction('syncAccounts',
-    SyncAccounts, help="sync on or more accounts")
+actionParser = Parser.addAction("syncAccounts", SyncAccounts, help="sync on or more accounts")
 
-actionParser.add_argument("-a", "--account", dest="accounts",
+actionParser.add_argument(
+    "-a",
+    "--account",
+    dest="accounts",
     default=[],
-    action='append',
-    metavar='ACCOUNT',
+    action="append",
+    metavar="ACCOUNT",
     required=True,
-    help="one or more accounts to sync")
+    help="one or more accounts to sync",
+)
 
-actionParser.add_argument("-e", "--engine", dest="engine",
-    default="SyncAccount",
-    help="the sync engine")
+actionParser.add_argument("-e", "--engine", dest="engine", default="SyncAccount", help="the sync engine")

@@ -1,4 +1,3 @@
-
 # Order of imports is order of actions in command line help message.
 from .unittests import UnitTests
 from .noop import Noop

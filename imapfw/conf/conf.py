@@ -26,15 +26,15 @@ class ImapfwConfig(object):
         return logging
 
     def setupConcurrency(self):
-        self.concurrency = Concurrency(self.parser.get('concurrency'))
-        set_module('concurrency', self.concurrency) # Export concurrency module.
+        self.concurrency = Concurrency(self.parser.get("concurrency"))
+        set_module("concurrency", self.concurrency)  # Export concurrency module.
 
     def loadRascal(self):
-        rascalFile = self.parser.get('rascalfile')
+        rascalFile = self.parser.get("rascalfile")
         if rascalFile is not None:
             self.rascal = Rascal()
             self.rascal.load(rascalFile)
-        set_module('rascal', self.rascal) # Export the rascal.
+        set_module("rascal", self.rascal)  # Export the rascal.
 
     def parseCLI(self):
         self.parser.parse()
@@ -46,8 +46,8 @@ class ImapfwConfig(object):
         # Let ui prefix log lines with the worker name.
         ui.setCurrentWorkerNameFunction(self.concurrency.getCurrentWorkerNameFunction())
         # Apply CLI options.
-        ui.enableDebugCategories(self.parser.get('debug'))
-        ui.setInfoLevel(self.parser.get('info'))
+        ui.enableDebugCategories(self.parser.get("debug"))
+        ui.setInfoLevel(self.parser.get("info"))
 
         self.ui = ui
-        set_module('ui', ui) # Export ui module.
+        set_module("ui", ui)  # Export ui module.

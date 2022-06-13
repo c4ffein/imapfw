@@ -32,8 +32,7 @@ from imapfw.interface import adapts, checkInterfaces
 from .driver import Driver, DriverInterface
 
 
-
-#TODO: remove this later: the DriverInterface must define the interfaces of
+# TODO: remove this later: the DriverInterface must define the interfaces of
 # this object.
 @checkInterfaces(reverse=False)
 @adapts(DriverInterface)
@@ -47,7 +46,7 @@ class Maildir(Driver):
         self._folders = None
 
     def _debug(self, msg):
-        runtime.ui.debugC(DRV, "driver of %s %s"% (self.getRepositoryName(), msg))
+        runtime.ui.debugC(DRV, "driver of %s %s" % (self.getRepositoryName(), msg))
 
     def _recursiveScanMaildir(self, relativePath=None):
         """Scan the Maildir recusively.
@@ -60,15 +59,16 @@ class Maildir(Driver):
         """
 
         def isFolder(path):
-            return (os.path.isdir(os.path.join(path, 'cur')) and
-                os.path.isdir(os.path.join(path, 'new')) and
-                os.path.isdir(os.path.join(path, 'tmp'))
-                )
+            return (
+                os.path.isdir(os.path.join(path, "cur"))
+                and os.path.isdir(os.path.join(path, "new"))
+                and os.path.isdir(os.path.join(path, "tmp"))
+            )
 
         def scanChildren(path, relativePath):
             for directory in os.listdir(path):
-                if directory in ['cur', 'new', 'tmp']:
-                    continue # Ignore special directories ASAP.
+                if directory in ["cur", "new", "tmp"]:
+                    continue  # Ignore special directories ASAP.
 
                 folderPath = os.path.join(path, directory)
                 if not os.path.isdir(folderPath):
@@ -79,11 +79,11 @@ class Maildir(Driver):
                 else:
                     newRelativePath = os.path.join(relativePath, directory)
 
-                self._recursiveScanMaildir(newRelativePath) # Recurse!
+                self._recursiveScanMaildir(newRelativePath)  # Recurse!
 
         # Fix local variables to their default values if needed.
-        maildirPath = self.conf.get('path')
-        sep = self.conf.get('sep')
+        maildirPath = self.conf.get("path")
+        sep = self.conf.get("sep")
 
         # Set the fullPath.
         if relativePath is None:
@@ -92,16 +92,16 @@ class Maildir(Driver):
             fullPath = os.path.join(maildirPath, relativePath)
 
         if isFolder(fullPath):
-            #TODO: get encoding from conf.
+            # TODO: get encoding from conf.
             if relativePath is None:
                 # We are the root of the maildir. Fix the name to '/'.
-                folder = Folder('/', encoding='UTF-8')
+                folder = Folder("/", encoding="UTF-8")
             else:
                 # Fix separator to '/' ASAP. ,-)
-                folder = Folder('/'.join(relativePath.split(sep)), encoding='UTF-8')
+                folder = Folder("/".join(relativePath.split(sep)), encoding="UTF-8")
             self._folders.append(folder)
 
-            if sep == '/': # Recurse if nested folders are allowed.
+            if sep == "/":  # Recurse if nested folders are allowed.
                 scanChildren(fullPath, relativePath)
         else:
             # The maildirPath as given by the user might not be a real maildir
@@ -110,28 +110,27 @@ class Maildir(Driver):
                 scanChildren(fullPath, relativePath)
 
     def connect(self):
-        path = expandPath(self.conf.get('path'))
+        path = expandPath(self.conf.get("path"))
         try:
             os.mkdir(path)
         except FileExistsError:
             pass
         except FileNotFoundError:
-            raise DriverFatalError(
-                "parent directory of '%s' does not exists"% path)
+            raise DriverFatalError("parent directory of '%s' does not exists" % path)
         if not os.path.isdir(path):
-            raise DriverFatalError("path is not a directory: %s"% path)
-        self.conf['path'] = path # Record expanted path.
+            raise DriverFatalError("path is not a directory: %s" % path)
+        self.conf["path"] = path  # Record expanted path.
         return True
 
     def getFolders(self):
-        self._folders = Folders() # Erase whatever we had.
-        self._debug('scanning folders')
-        self._recursiveScanMaildir() # Put result into self._folders.
+        self._folders = Folders()  # Erase whatever we had.
+        self._debug("scanning folders")
+        self._recursiveScanMaildir()  # Put result into self._folders.
         return self._folders
 
     def select(self, mailbox):
-        #TODO
+        # TODO
         return True
 
     def logout(self):
-        self._debug('logging out')
+        self._debug("logging out")

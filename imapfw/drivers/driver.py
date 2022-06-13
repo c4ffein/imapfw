@@ -23,13 +23,13 @@ class DriverInterface(Interface):
 
     scope = Interface.PUBLIC
 
-    conf = {} # The configuration of the type has to be there.
+    conf = {}  # The configuration of the type has to be there.
     local = None
 
     def getClassName(self) -> str:
         """Return the class name, as defined by the rascal."""
 
-    #TODO: why?
+    # TODO: why?
     def getDriverClassName(self) -> str:
         """Return the class name, as defined by the rascal."""
 
@@ -66,13 +66,11 @@ class Driver(object):
         return self.local
 
 
-def loadDriver(cls_driver: DriverClass, repositoryName: str,
-        repositoryConf: dict) -> Driver:
+def loadDriver(cls_driver: DriverClass, repositoryName: str, repositoryConf: dict) -> Driver:
 
     # Build the final end-driver.
     if not issubclass(cls_driver, Driver):
-        raise TypeError("driver %s of %s does not satisfy"
-            " DriverInterface"% (cls_driver.__name__, repositoryName))
+        raise TypeError("driver %s of %s does not satisfy" " DriverInterface" % (cls_driver.__name__, repositoryName))
 
     driver = cls_driver(repositoryName, repositoryConf)
     driver.init()

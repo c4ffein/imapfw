@@ -39,5 +39,5 @@ class TestMessages(unittest.TestCase):
         self.assertNotIn(self.message2, self.messagesI)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main(verbosity=2)

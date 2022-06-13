@@ -20,22 +20,25 @@ from imapfw.types.message import Messages, Message
 # Annotations.
 from imapfw.annotation import List, Dict, Union
 
-#from .imapc.interface import IMAPcInterface
+# from .imapc.interface import IMAPcInterface
 
 
-#TODO: use UTF-7.
-ENCODING = 'UTF-8'
+# TODO: use UTF-7.
+ENCODING = "UTF-8"
 
 
 # Exceptions.
 class ImapInternalError(Exception):
     """Error raised for internal logic errors."""
 
+
 class ImapTemporaryError(ImapInternalError):
     """Error raised for temporary IMAP protocol errors."""
 
+
 class ImapCommandError(ImapInternalError):
     """Error raised when IMAP server repond with failure status to a command."""
+
 
 class ImapAbortError(ImapInternalError):
     """Error raised when connexion is unexpectly closed."""
@@ -50,13 +53,13 @@ class FetchAttributes(object):
             self.attributes.append(name)
 
     def enableFLAGS(self):
-        self._enable('FLAGS')
+        self._enable("FLAGS")
 
     def enableUID(self):
-        self._enable('UID')
+        self._enable("UID")
 
     def enableINTERNALDATE(self):
-        self._enable('INTERNALDATE')
+        self._enable("INTERNALDATE")
 
     def setDefaults(self):
         self.enableUID()
@@ -66,14 +69,14 @@ class FetchAttributes(object):
     def __str__(self):
         if len(self.attributes) < 1:
             raise ImapInternalError("attributes is empty")
-        return "(%s)"% ' '.join(self.attributes)
+        return "(%s)" % " ".join(self.attributes)
 
 
-#TODO: interface
+# TODO: interface
 class SearchConditions(object):
     def __init__(self):
-        self.maxSize = None # in bytes (2097152 for 2MB)
-        self.minDate = None # time_struct
+        self.maxSize = None  # in bytes (2097152 for 2MB)
+        self.minDate = None  # time_struct
         self.minUID = None
 
     def setMaxSize(self, maxSize: int) -> None:
@@ -86,23 +89,23 @@ class SearchConditions(object):
         searchConditions = []
 
         if self.minUID is not None:
-            searchConditions.append("UID %i:*"% self.minUID)
+            searchConditions.append("UID %i:*" % self.minUID)
 
         # if self.minDate is not None:
-            # searchConditions.append("SINCE %02i-%s-%i"%
-                # (time_struct[2], imaplib2.MonthNames[time_struct[1]], time_struct[0]))
+        # searchConditions.append("SINCE %02i-%s-%i"%
+        # (time_struct[2], imaplib2.MonthNames[time_struct[1]], time_struct[0]))
 
         if self.maxSize is not None:
-            searchConditions.append("SMALLER %i"% self.maxSize)
+            searchConditions.append("SMALLER %i" % self.maxSize)
 
         if len(searchConditions) > 0:
-            return ' '.join(searchConditions)
-        return 'UID 1:*'
+            return " ".join(searchConditions)
+        return "UID 1:*"
 
 
-#TODO: move to imapc/interface.py
+# TODO: move to imapc/interface.py
 class IMAPcInterface(object):
-    pass #TODO
+    pass  # TODO
 
 
 class IMAPlib2_skater(object):
@@ -112,12 +115,10 @@ class IMAPlib2_skater(object):
         self.imap = None
 
     def _debug(self, command: str, msg: str) -> None:
-        runtime.ui.debugC(IMAP, "[%s] %s"%
-            (command, msg))
+        runtime.ui.debugC(IMAP, "[%s] %s" % (command, msg))
 
     def _debugResponse(self, command: str, response: str) -> None:
-        runtime.ui.debugC(IMAP, "[%s] response: %s"%
-            (command, response))
+        runtime.ui.debugC(IMAP, "[%s] response: %s" % (command, response))
 
     def connect(self, host: str, port: str) -> None:
         from .imaplib3 import imaplib2
@@ -133,7 +134,7 @@ class IMAPlib2_skater(object):
 
         str_capability = lst_capability[0].decode(ENCODING)
         capability = []
-        for cap in str_capability.split(' '):
+        for cap in str_capability.split(" "):
             capability.append(cap)
 
         self._debug("getCapability", capability)
@@ -145,15 +146,15 @@ class IMAPlib2_skater(object):
         # (typ, [data])
         # e.g. ('OK', [b'(\\HasNoChildren) "." INBOX.DRAFT'])
         response = self.imap.list()
-        self._debugResponse('list', response)
+        self._debugResponse("list", response)
 
         status, data = response
-        if status == 'OK':
+        if status == "OK":
             for bytes_folderInfo in data:
                 foldersInfo = bytes_folderInfo.decode(ENCODING)
-                lst_foldersInfo = foldersInfo.split(' ')
+                lst_foldersInfo = foldersInfo.split(" ")
 
-                folderName = ' '.join(lst_foldersInfo[2:]).encode(ENCODING)
+                folderName = " ".join(lst_foldersInfo[2:]).encode(ENCODING)
                 folder = Folder(folderName)
 
                 folder.setRoot(lst_foldersInfo[1])
@@ -165,29 +166,27 @@ class IMAPlib2_skater(object):
                     folder.setHasChildren(True)
 
                 folders.append(folder)
-            self._debug('getFolders', folders)
+            self._debug("getFolders", folders)
             return folders
 
         raise ImapCommandError(str(data))
 
-    def getMessages(self, messages: Messages,
-            attributes: FetchAttributes) -> Messages:
+    def getMessages(self, messages: Messages, attributes: FetchAttributes) -> Messages:
         self._debug("getMessages", repr(messages))
 
         # (typ, [data, ...])
         # e.g. ('OK', [b'1 (UID 1 FLAGS (\\Seen) INTERNALDATE "15-Nov-2015
         # 00:00:46 +0100")', b'2 (UID 2 FLAGS () INTERNALDATE "15-Nov-2015
         # 00:00:46 +0100")'])
-        response = self.imap.uid('FETCH', messages.coalesceUIDs(),
-            str(attributes))
+        response = self.imap.uid("FETCH", messages.coalesceUIDs(), str(attributes))
         self._debugResponse("getMessages", response)
 
         status, data = response
-        if status == 'OK':
+        if status == "OK":
             for item in data:
                 item = item.decode(ENCODING)
                 uid = int(item[0])
-                #TODO: item must be of type MessageAttributes.
+                # TODO: item must be of type MessageAttributes.
                 messages.setAttributes(uid, item)
             return messages
         raise ImapCommandError(data)
@@ -196,7 +195,7 @@ class IMAPlib2_skater(object):
         return self.imap.namespace()
 
     def login(self, user: str, password: str) -> None:
-        self._debug("login", "%s, <password>"% user)
+        self._debug("login", "%s, <password>" % user)
 
         # (typ, [data])
         # e.g. ('OK', [b'Logged In'])
@@ -204,7 +203,7 @@ class IMAPlib2_skater(object):
         self._debugResponse("capability", response)
 
         status, data = response
-        if status == 'OK':
+        if status == "OK":
             return None
 
         data = data.decode(ENCODING)
@@ -213,18 +212,18 @@ class IMAPlib2_skater(object):
     def logout(self) -> None:
         self.imap.logout()
 
-    def searchUID(self, searchConditions: SearchConditions=SearchConditions()):
+    def searchUID(self, searchConditions: SearchConditions = SearchConditions()):
         conditions = searchConditions.formatConditions()
-        self._debug("searchUID", "%s"% conditions)
+        self._debug("searchUID", "%s" % conditions)
 
         # (typ, [data])
         # e.g. ('OK', [b'2']
-        response = self.imap.uid('SEARCH', conditions)
+        response = self.imap.uid("SEARCH", conditions)
         self._debugResponse("searchUID", response)
         status, data = response
-        if status == 'OK':
+        if status == "OK":
             messages = Messages()
-            for uid in data[0].decode(ENCODING).split(' '):
+            for uid in data[0].decode(ENCODING).split(" "):
                 messages.add(Message(int(uid)))
             return messages
 
@@ -241,8 +240,8 @@ class IMAPlib2_skater(object):
         self._debugResponse("select", response)
 
         status, data = response
-        if status == 'OK':
-            #TODO: make a collection of UIDs.
+        if status == "OK":
+            # TODO: make a collection of UIDs.
             return int(data[0])
 
         data = data.decode(ENCODING)
@@ -256,19 +255,20 @@ def Imap(backendNameVersion):
         imaplib2, the version number can be appended like this: "imaplib2-2.50".
     """
 
-    lst_nameVersion = backendNameVersion.split('-')
+    lst_nameVersion = backendNameVersion.split("-")
     backendName = lst_nameVersion.pop(0)
     version = None
     if len(lst_nameVersion) > 0:
         version = lst_nameVersion.pop(0)
 
     # imapc
-    if backendName == 'imapc':
+    if backendName == "imapc":
         from .imapc.imapc import IMAP4rev1
+
         return IMAP4rev1()
 
     # imaplib2 (pure-python3)
-    if backendName == 'imaplib3':
+    if backendName == "imaplib3":
         return IMAPlib2_skater()
 
-    raise Exception("unkown backend: %s"% backendName)
+    raise Exception("unkown backend: %s" % backendName)

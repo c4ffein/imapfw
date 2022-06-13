@@ -31,13 +31,13 @@ class ShellAction(object):
 
     def exception(self, e: ExceptionClass) -> None:
         self.exitCode = 3
-        raise NotImplementedError #TODO
+        raise NotImplementedError  # TODO
 
     def getExitCode(self) -> int:
         return self._exitCode
 
     def init(self, parser: Parser) -> None:
-        self._shellName = parser.get('shell_name')
+        self._shellName = parser.get("shell_name")
 
     def run(self) -> None:
         cls_shell = runtime.rascal.get(self._shellName, [Shell])
@@ -48,9 +48,9 @@ class ShellAction(object):
         exitCode = shell.afterSession()
         self._setExitCode(exitCode)
 
-actionParser = Parser.addAction('shell', ShellAction, help="run in shell mode")
 
-actionParser.add_argument(dest="shell_name",
-    default=None,
-    metavar="SHELL_NAME",
-    help="the shell from the rascal to run")
+actionParser = Parser.addAction("shell", ShellAction, help="run in shell mode")
+
+actionParser.add_argument(
+    dest="shell_name", default=None, metavar="SHELL_NAME", help="the shell from the rascal to run"
+)

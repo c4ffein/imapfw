@@ -48,13 +48,14 @@ class CacheUI(object):
 # Put this runtime module into _this variable so we use setattr.
 _this = sys.modules.get(__name__)
 
-ui = CacheUI() # Cache logs until true UI is set.
+ui = CacheUI()  # Cache logs until true UI is set.
 concurrency = None
 rascal = None
 
+
 def set_module(name, mod):
-    if name == 'ui':
-        previousUI = getattr(_this, 'ui')
+    if name == "ui":
+        previousUI = getattr(_this, "ui")
         try:
             previousUI.unCache(mod)
         except AttributeError:

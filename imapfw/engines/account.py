@@ -28,8 +28,7 @@ from imapfw.types.account import Account
 class SyncAccounts(SyncEngine):
     """The sync account engine."""
 
-    def __init__(self, workerName: str, referent: Emitter,
-            left: Emitter, right: Emitter):
+    def __init__(self, workerName: str, referent: Emitter, left: Emitter, right: Emitter):
         super(SyncAccounts, self).__init__(workerName)
 
         self.referent = referent
@@ -41,14 +40,14 @@ class SyncAccounts(SyncEngine):
         """Sync one account."""
 
         accountName = account.getClassName()
-        runtime.ui.infoL(3, "merging folders for %s"% accountName)
+        runtime.ui.infoL(3, "merging folders for %s" % accountName)
 
         # Get the repository instances from the rascal.
         leftRepository = account.fw_getLeft()
         rghtRepository = account.fw_getRight()
 
-        self.left.buildDriver(accountName, 'left')
-        self.rght.buildDriver(accountName, 'right')
+        self.left.buildDriver(accountName, "left")
+        self.rght.buildDriver(accountName, "right")
 
         # Connect the drivers.
         self.left.connect()
@@ -68,8 +67,7 @@ class SyncAccounts(SyncEngine):
                 if folder not in mergedFolders:
                     mergedFolders.append(folder)
 
-        runtime.ui.infoL(3, "%s merged folders %s"%
-            (accountName, mergedFolders))
+        runtime.ui.infoL(3, "%s merged folders %s" % (accountName, mergedFolders))
 
         # Pass the list to the rascal.
         rascalFolders = account.syncFolders(mergedFolders)
@@ -84,25 +82,24 @@ class SyncAccounts(SyncEngine):
                 ignoredFolders.append(folder)
 
         if len(ignoredFolders) > 0:
-            runtime.ui.warn("rascal, you asked to sync non-existing folders"
-                " for '%s': %s", accountName, ignoredFolders)
+            runtime.ui.warn(
+                "rascal, you asked to sync non-existing folders" " for '%s': %s", accountName, ignoredFolders
+            )
 
         if len(syncFolders) < 1:
-            runtime.ui.infoL(3, "%s: no folder to sync"% accountName)
-            return # Nothing more to do.
+            runtime.ui.infoL(3, "%s: no folder to sync" % accountName)
+            return  # Nothing more to do.
 
-        #TODO: make max_connections mandatory in rascal.
+        # TODO: make max_connections mandatory in rascal.
         maxFolderWorkers = min(
-            len(syncFolders),
-            rghtRepository.conf.get('max_connections'),
-            leftRepository.conf.get('max_connections'))
+            len(syncFolders), rghtRepository.conf.get("max_connections"), leftRepository.conf.get("max_connections")
+        )
 
-        runtime.ui.infoL(3, "%s syncing folders %s"% (accountName, syncFolders))
+        runtime.ui.infoL(3, "%s syncing folders %s" % (accountName, syncFolders))
 
         # Syncing folders is not the job of this engine. Use sync mode to ensure
         # the referent starts syncing of folders before this engine stops.
-        self.referent.syncFolders_sync(
-            accountName, maxFolderWorkers, syncFolders)
+        self.referent.syncFolders_sync(accountName, maxFolderWorkers, syncFolders)
 
         # Wait for all the folders to be synced before processing the next
         # account.
@@ -121,16 +118,16 @@ class SyncAccounts(SyncEngine):
                 self.processing(accountName)
                 # Get the account instance from the rascal.
                 account = loadAccount(accountName)
-                self._syncAccount(account) # Wait until folders are done.
+                self._syncAccount(account)  # Wait until folders are done.
                 self.setExitCode(0)
-                #TODO: Here, we only keep max exit code. Would worth using the
+                # TODO: Here, we only keep max exit code. Would worth using the
                 # rascal at the end of the process for each account.
 
             except Exception as e:
-                runtime.ui.error("could not sync account %s"% accountName)
+                runtime.ui.error("could not sync account %s" % accountName)
                 runtime.ui.exception(e)
-                #TODO: honor rascal!
-                self.setExitCode(10) # See manual.
+                # TODO: honor rascal!
+                self.setExitCode(10)  # See manual.
 
-        self.checkExitCode() # Sanity check.
+        self.checkExitCode()  # Sanity check.
         self.referent.accountEngineDone(self.getExitCode())

@@ -23,7 +23,8 @@
 
 from .controller import Controller
 
-#TODO
+# TODO
 class Transcoder(Controller):
     """Controller to encode/decode folder names."""
+
     pass

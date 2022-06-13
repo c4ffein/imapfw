@@ -22,7 +22,7 @@ class ShellInterface(Interface):
     def interactive(self) -> None:
         """Start the interactive session when called."""
 
-    def register(self, name: str, alias: str=None) -> None:
+    def register(self, name: str, alias: str = None) -> None:
         """Add a variable to the interactive environment.
 
         Attribute name to pass to the interpreter.  The name MUST be an
@@ -51,31 +51,32 @@ class Shell(object):
     def configureCompletion(self) -> None:
         try:
             from jedi.utils import setup_readline
+
             setup_readline()
         except ImportError:
             # Fallback to the stdlib readline completer if it is installed.
             # Taken from http://docs.python.org/2/library/rlcompleter.html
-            runtime.ui.info("jedi is not installed, falling back to readline"
-                " for completion")
+            runtime.ui.info("jedi is not installed, falling back to readline" " for completion")
             try:
                 import readline
                 import rlcompleter
+
                 readline.parse_and_bind("tab: complete")
             except ImportError:
-                runtime.ui.info("readline is not installed either."
-                    " No tab completion is enabled.")
+                runtime.ui.info("readline is not installed either." " No tab completion is enabled.")
 
     def beforeSession(self) -> None:
         pass
 
     def interactive(self) -> None:
         import code
+
         try:
             code.interact(banner=self.banner, local=self._env)
         except:
             pass
 
-    def register(self, name: str, alias: str=None) -> None:
+    def register(self, name: str, alias: str = None) -> None:
         if alias is None:
             alias = name
         self._env[alias] = getattr(self, name)
@@ -91,6 +92,7 @@ class DriveDriverInterface(Interface):
     def buildDriver(self) -> None:
         """Build the driver for the repository in conf."""
 
+
 @checkInterfaces()
 @implements(ShellInterface, DriveDriverInterface)
 class DriveDriver(Shell):
@@ -103,7 +105,7 @@ class DriveDriver(Shell):
     ```
     """
 
-    conf = {'repository': None}
+    conf = {"repository": None}
 
     def __init__(self):
         super(DriveDriver, self).__init__()
@@ -132,9 +134,9 @@ class DriveDriver(Shell):
         from imapfw.architects import DriverArchitect
         from imapfw.edmp import SyncEmitter
 
-        self.repository = loadRepository(self.conf.get('repository'))
+        self.repository = loadRepository(self.conf.get("repository"))
         repositoryName = self.repository.getClassName()
-        self.driverArchitect = DriverArchitect("%s.Driver"% repositoryName)
+        self.driverArchitect = DriverArchitect("%s.Driver" % repositoryName)
         self.driverArchitect.init()
         self.driverArchitect.start()
         self.driverArch = self.driverArchitect
@@ -143,22 +145,20 @@ class DriveDriver(Shell):
         self.d = SyncEmitter(self.driver)
         self.buildDriver()
 
-        self.register('repository')
-        self.register('driverArch')
-        self.register('driver')
-        self.register('d')
+        self.register("repository")
+        self.register("driverArch")
+        self.register("driver")
+        self.register("d")
 
         # Setup banner.
         events = []
-        for name, method in inspect.getmembers(DriverRunner,
-                inspect.isfunction):
-            if name.startswith('_') or name == 'run':
+        for name, method in inspect.getmembers(DriverRunner, inspect.isfunction):
+            if name.startswith("_") or name == "run":
                 continue
-            events.append("- d.%s%s\n%s\n"%
-                (name, inspect.signature(method), method.__doc__))
+            events.append("- d.%s%s\n%s\n" % (name, inspect.signature(method), method.__doc__))
         self.dict_events = events
         self.events = self._events
-        self.register('events')
+        self.register("events")
 
         banner = """
 Welcome to the shell! The driver is running in a worker. Take control of it with

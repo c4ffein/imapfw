@@ -45,6 +45,7 @@ class EngineArchitectInterface(Interface):
     def stop(self) -> None:
         """Stop workers."""
 
+
 @debugArchitect
 @checkInterfaces()
 @implements(EngineArchitectInterface)
@@ -77,4 +78,3 @@ class EngineArchitect(object):
     def stop(self) -> None:
         self.drivers.stop()
         self.architect.stop()
-

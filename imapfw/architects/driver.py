@@ -10,6 +10,7 @@ from .debug import debugArchitect
 
 # Interfaces.
 from imapfw.interface import implements, Interface, checkInterfaces
+
 # Annotations.
 from imapfw.edmp import Emitter
 
@@ -33,6 +34,7 @@ class DriverArchitectInterface(object):
     def stop(self) -> None:
         """Stop the driver."""
 
+
 @debugArchitect
 @checkInterfaces()
 @implements(DriverArchitectInterface)
@@ -46,10 +48,10 @@ class DriverArchitect(object):
         self.worker = None
         self.name = self.__class__.__name__
 
-        self._debug("__init__(%s)"% workerName)
+        self._debug("__init__(%s)" % workerName)
 
     def _debug(self, msg) -> None:
-        runtime.ui.debugC(ARC, "%s %s"% (self.workerName, msg))
+        runtime.ui.debugC(ARC, "%s %s" % (self.workerName, msg))
 
     def getEmitter(self) -> Emitter:
         self._debug("getEmitter()")
@@ -60,10 +62,7 @@ class DriverArchitect(object):
         receiver, self.emitter = newEmitterReceiver(self.workerName)
         driverRunner = DriverRunner(self.workerName, receiver)
 
-        self.worker = runtime.concurrency.createWorker(self.workerName,
-            topRunner,
-            (self.workerName, driverRunner.run)
-            )
+        self.worker = runtime.concurrency.createWorker(self.workerName, topRunner, (self.workerName, driverRunner.run))
 
     def kill(self) -> None:
         self._debug("kill()")
@@ -127,6 +126,7 @@ class DriversArchitectInterface(Interface):
     def stop(self) -> None:
         """Stop the workers."""
 
+
 @checkInterfaces()
 @implements(DriversArchitectInterface)
 class DriversArchitect(object):
@@ -143,7 +143,7 @@ class DriversArchitect(object):
 
     def init(self) -> None:
         for i in range(self.number):
-            workerName = "%s.Driver.%i"% (self.workerName, i)
+            workerName = "%s.Driver.%i" % (self.workerName, i)
             driver = DriverArchitect(workerName)
             driver.init()
             self.driverArchitects[i] = driver

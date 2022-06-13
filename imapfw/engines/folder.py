@@ -28,8 +28,7 @@ from imapfw.types.folder import Folder
 class SyncFolders(SyncEngine):
     """The engine to sync a folder in a worker."""
 
-    def __init__(self, workerName: str, referent: Emitter,
-            left: Emitter, right: Emitter, accountName: str):
+    def __init__(self, workerName: str, referent: Emitter, left: Emitter, right: Emitter, accountName: str):
 
         super(SyncFolders, self).__init__(workerName)
         self.referent = referent
@@ -38,7 +37,7 @@ class SyncFolders(SyncEngine):
         self.accountName = accountName
 
     def _infoL(self, level, msg):
-        runtime.ui.infoL(level, "%s %s"% (self.workerName, msg))
+        runtime.ui.infoL(level, "%s %s" % (self.workerName, msg))
 
     # Outlined.
     def _syncFolder(self, folder: Folder) -> int:
@@ -49,9 +48,9 @@ class SyncFolders(SyncEngine):
         # rightRepository = account.fw_getRight()
 
         if self.left.isDriverBuilt_sync() is False:
-            self.left.buildDriver(self.accountName, 'left')
+            self.left.buildDriver(self.accountName, "left")
         if self.rght.isDriverBuilt_sync() is False:
-            self.rght.buildDriver(self.accountName, 'right')
+            self.rght.buildDriver(self.accountName, "right")
 
         self.left.connect()
         self.rght.connect()
@@ -78,10 +77,10 @@ class SyncFolders(SyncEngine):
                 self.setExitCode(exitCode)
 
             except Exception as e:
-                runtime.ui.error("could not sync folder %s"% folder)
+                runtime.ui.error("could not sync folder %s" % folder)
                 runtime.ui.exception(e)
-                #TODO: honor hook!
-                self.setExitCode(10) # See manual.
+                # TODO: honor hook!
+                self.setExitCode(10)  # See manual.
 
         self.checkExitCode()
         self.referent.stop(self.getExitCode())

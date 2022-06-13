@@ -22,16 +22,16 @@
 
 from .controller import Controller
 
-#TODO
+# TODO
 class NameTrans(Controller):
     """Controller to change the folder names."""
 
     conf = None
 
     def fw_initController(self):
-        self._toDriverTrans = self.conf.get('toDriverTrans')
-        self._fromDriverTrans = self.conf.get('fromDriverTrans')
-        self._encoding = self.conf.get('encoding')
+        self._toDriverTrans = self.conf.get("toDriverTrans")
+        self._fromDriverTrans = self.conf.get("fromDriverTrans")
+        self._encoding = self.conf.get("encoding")
 
     def getFolders(self):
         folders = self.driver.getFolders()

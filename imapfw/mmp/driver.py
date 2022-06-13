@@ -28,7 +28,7 @@ from ..constants import DRV
 from ..types.repository import RepositoryInterface
 
 
-#TODO: catch exceptions?
+# TODO: catch exceptions?
 class DriverManager(Manager):
     """The driver manager.
 
@@ -51,10 +51,10 @@ class DriverManager(Manager):
         self.ui = runtime.ui
         self.rascal = runtime.rascal
 
-        self._driver = None # Might change over time.
+        self._driver = None  # Might change over time.
         self._folders = None
 
-        self.ui.debugC(DRV, "%s manager created"% workerName)
+        self.ui.debugC(DRV, "%s manager created" % workerName)
 
     def connect(self, repositoryName):
         """Connect the driver for this repository (name)."""
@@ -64,40 +64,36 @@ class DriverManager(Manager):
 
         # Build the driver.
         driver = repository.fw_chainControllers()
-        driver.fw_init(repository.conf, repositoryName) # Initialize.
-        driver.fw_sanityChecks(driver) # Catch common errors early.
+        driver.fw_init(repository.conf, repositoryName)  # Initialize.
+        driver.fw_sanityChecks(driver)  # Catch common errors early.
 
-        self.ui.debugC(DRV, "built driver '{}' for '{}'",
-            driver.getName(), repositoryName)
+        self.ui.debugC(DRV, "built driver '{}' for '{}'", driver.getName(), repositoryName)
         self.ui.debugC(DRV, "'{}' has conf {}", repositoryName, driver.conf)
 
         # Ready, connect.
         if driver.isLocal:
-            self.ui.debugC(DRV, '{} working in {}', driver.getOwnerName(),
-                driver.conf.get('path'))
+            self.ui.debugC(DRV, "{} working in {}", driver.getOwnerName(), driver.conf.get("path"))
         else:
-            self.ui.debugC(DRV, '{} connecting to {}:{}',
-                driver.getOwnerName(), driver.conf.get('host'),
-                driver.conf.get('port'))
+            self.ui.debugC(
+                DRV, "{} connecting to {}:{}", driver.getOwnerName(), driver.conf.get("host"), driver.conf.get("port")
+            )
 
         connected = driver.connect()
         self.ui.debugC(DRV, "driver of {} connected", driver.getOwnerName())
         if connected:
             self._driver = driver
         else:
-            raise Exception("%s: driver could not connect"% self._workerName)
+            raise Exception("%s: driver could not connect" % self._workerName)
 
     def ex_account_connect(self):
         self.connect()
 
     def ex_account_fetchFolders(self):
-        self.ui.debugC(DRV, "driver of {} starts fetching of folders",
-            self._driver.getOwnerName())
+        self.ui.debugC(DRV, "driver of {} starts fetching of folders", self._driver.getOwnerName())
         self._folders = self._driver.getFolders()
 
     def ex_account_getFolders(self):
-        self.ui.debugC(DRV, "driver of {} got folders: {}",
-            self._driver.getOwnerName(), self._folders)
+        self.ui.debugC(DRV, "driver of {} got folders: {}", self._driver.getOwnerName(), self._folders)
         return self._folders
 
     def ex_account_logout(self):

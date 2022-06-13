@@ -48,26 +48,24 @@ class TestConcurrency(unittest.TestCase):
         self.assertIsInstance(runtime.concurrency.createLock(), LockBase)
 
     def test_03_worker_interface(self):
-        self.assertIsInstance(
-            runtime.concurrency.createWorker('noop', self.noop, ()),
-            WorkerInterface)
+        self.assertIsInstance(runtime.concurrency.createWorker("noop", self.noop, ()), WorkerInterface)
 
     def test_04_worker_start_join(self):
-        worker = runtime.concurrency.createWorker('noop', self.noop, ())
+        worker = runtime.concurrency.createWorker("noop", self.noop, ())
 
         worker.start()
-        self.assertEqual(worker.getName(), 'noop')
+        self.assertEqual(worker.getName(), "noop")
 
         worker.join()
 
     def test_05_worker_start_kill(self):
-        worker = runtime.concurrency.createWorker('blocking', self.blocking, ())
+        worker = runtime.concurrency.createWorker("blocking", self.blocking, ())
 
         worker.start()
-        self.assertEqual(worker.getName(), 'blocking')
+        self.assertEqual(worker.getName(), "blocking")
 
         worker.kill()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main(verbosity=2)

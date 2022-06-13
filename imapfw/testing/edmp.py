@@ -33,7 +33,7 @@ class TestEDMP(unittest.TestCase):
     def setUp(self):
         self.c = runtime.concurrency
         ui = NullUI()
-        runtime.set_module('ui', ui)
+        runtime.set_module("ui", ui)
 
     def test_channel(self):
         queue = self.c.createQueue()
@@ -48,7 +48,7 @@ class TestEDMP(unittest.TestCase):
         self.assertEqual([x for x in chan], [0, 1, 2])
 
     def test_newEmitterReceiver(self):
-        r, e = newEmitterReceiver('test')
+        r, e = newEmitterReceiver("test")
         self.assertIsInstance(r, Receiver)
         self.assertIsInstance(e, Emitter)
 
@@ -56,8 +56,8 @@ class TestEDMP(unittest.TestCase):
         def onEvent(true):
             self.assertEqual(true, True)
 
-        r, e = newEmitterReceiver('test')
-        r.accept('event', onEvent)
+        r, e = newEmitterReceiver("test")
+        r.accept("event", onEvent)
         e.event(True)
         e.stopServing()
         while r.react():
@@ -69,8 +69,8 @@ class TestEDMP(unittest.TestCase):
             self.assertEqual(false, False)
             self.assertEqual(none, None)
 
-        r, e = newEmitterReceiver('test')
-        r.accept('event', onEvent)
+        r, e = newEmitterReceiver("test")
+        r.accept("event", onEvent)
         e.event(True, False, none=None)
         e.stopServing()
         while r.react():
@@ -80,8 +80,8 @@ class TestEDMP(unittest.TestCase):
         def onEvent(true):
             self.assertEqual(true, True)
 
-        r, e = newEmitterReceiver('test')
-        r.accept('event', onEvent, True)
+        r, e = newEmitterReceiver("test")
+        r.accept("event", onEvent, True)
         e.event()
         e.stopServing()
         while r.react():
@@ -92,8 +92,8 @@ class TestEDMP(unittest.TestCase):
             self.assertEqual(true, True)
             self.assertEqual(false, False)
 
-        r, e = newEmitterReceiver('test')
-        r.accept('event', onEvent, True, False)
+        r, e = newEmitterReceiver("test")
+        r.accept("event", onEvent, True, False)
         e.event()
         e.stopServing()
         while r.react():
@@ -107,8 +107,8 @@ class TestEDMP(unittest.TestCase):
             self.assertEqual(eight, 8)
             self.assertEqual(nine, 9)
 
-        r, e = newEmitterReceiver('test')
-        r.accept('event', onEvent, 8, 9)
+        r, e = newEmitterReceiver("test")
+        r.accept("event", onEvent, 8, 9)
         e.event(1, 2, 3)
         e.stopServing()
         while r.react():
@@ -116,10 +116,10 @@ class TestEDMP(unittest.TestCase):
 
     def test_event_errors(self):
         def onEvent():
-            raise RuntimeError('error')
+            raise RuntimeError("error")
 
-        r, e = newEmitterReceiver('test')
-        r.accept('event', onEvent, True, False)
+        r, e = newEmitterReceiver("test")
+        r.accept("event", onEvent, True, False)
         e.event()
         e.stopServing()
 
@@ -129,15 +129,15 @@ class TestEDMP(unittest.TestCase):
 
     def test_event_errors_sync(self):
         def onEvent():
-            raise RuntimeError('error')
+            raise RuntimeError("error")
 
         def runner(r):
             while r.react():
                 pass
 
-        r, e = newEmitterReceiver('test')
-        r.accept('event', onEvent)
-        w = self.c.createWorker('runner', runner, (r,))
+        r, e = newEmitterReceiver("test")
+        r.accept("event", onEvent)
+        w = self.c.createWorker("runner", runner, (r,))
         w.start()
 
         # Must raise error.
@@ -146,5 +146,5 @@ class TestEDMP(unittest.TestCase):
         w.join()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main(verbosity=2)

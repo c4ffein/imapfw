@@ -9,10 +9,10 @@ and how to structure the underlying code.
 """
 
 __all__ = [
-    'FetchAttributes',
-    'Imap',
-    'Maildir',
-    'SearchConditions',
+    "FetchAttributes",
+    "Imap",
+    "Maildir",
+    "SearchConditions",
 ]
 
 from imapfw.drivers.imap import Imap

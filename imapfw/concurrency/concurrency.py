@@ -37,29 +37,53 @@ locks. The real function is set according to the command-line option.
 
 
 class WorkerInterface(object):
-    def getName(self):  raise NotImplementedError
-    def join(self):     raise NotImplementedError
-    def kill(self):     raise NotImplementedError
-    def start(self):    raise NotImplementedError
+    def getName(self):
+        raise NotImplementedError
+
+    def join(self):
+        raise NotImplementedError
+
+    def kill(self):
+        raise NotImplementedError
+
+    def start(self):
+        raise NotImplementedError
 
 
 class QueueInterface(object):
-    def empty(self):        raise NotImplementedError
-    def get(self):          raise NotImplementedError
-    def get_nowait(self):   raise NotImplementedError
-    def put(self):          raise NotImplementedError
+    def empty(self):
+        raise NotImplementedError
+
+    def get(self):
+        raise NotImplementedError
+
+    def get_nowait(self):
+        raise NotImplementedError
+
+    def put(self):
+        raise NotImplementedError
 
 
 class LockInterface(object):
-    def acquire(self):  raise NotImplementedError
-    def release(self):  raise NotImplementedError
+    def acquire(self):
+        raise NotImplementedError
+
+    def release(self):
+        raise NotImplementedError
 
 
 class ConcurrencyInterface(object):
-    def createLock(self):                   raise NotImplementedError
-    def createQueue(self):                  raise NotImplementedError
-    def createWorker(self):                 raise NotImplementedError
-    def getCurrentWorkerNameFunction(self): raise NotImplementedError
+    def createLock(self):
+        raise NotImplementedError
+
+    def createQueue(self):
+        raise NotImplementedError
+
+    def createWorker(self):
+        raise NotImplementedError
+
+    def getCurrentWorkerNameFunction(self):
+        raise NotImplementedError
 
 
 def WorkerSafe(lock) -> LockInterface:
@@ -75,6 +99,7 @@ def WorkerSafe(lock) -> LockInterface:
             with lock:
                 values = func(*args, **kwargs)
             return values
+
         return safeFunc
 
     return decorate
@@ -111,8 +136,7 @@ class ThreadingBackend(ConcurrencyInterface):
             def __init__(self, name, target, args):
                 self._name = name
 
-                self._thread = Thread(name=name, target=target, args=args,
-                    daemon=True)
+                self._thread = Thread(name=name, target=target, args=args, daemon=True)
 
             def getName(self):
                 return self._name
@@ -124,16 +148,16 @@ class ThreadingBackend(ConcurrencyInterface):
                 worker. In daemon mode: workers get's killed when the main thread
                 gets killed."""
 
-                runtime.ui.debugC(WRK, "%s killed"% self._name)
+                runtime.ui.debugC(WRK, "%s killed" % self._name)
 
             def start(self):
                 self._thread.start()
-                runtime.ui.debugC(WRK, "%s started"% self._name)
+                runtime.ui.debugC(WRK, "%s started" % self._name)
 
             def join(self):
-                runtime.ui.debugC(WRK, "%s join"% self._name)
-                self._thread.join() # Block until thread is done.
-                runtime.ui.debugC(WRK, "%s joined"% self._name)
+                runtime.ui.debugC(WRK, "%s join" % self._name)
+                self._thread.join()  # Block until thread is done.
+                runtime.ui.debugC(WRK, "%s joined" % self._name)
 
         return Worker(name, target, args)
 
@@ -159,7 +183,7 @@ class ThreadingBackend(ConcurrencyInterface):
         return TLock(Lock())
 
     def createQueue(self):
-        from queue import Queue, Empty # Thread-safe.
+        from queue import Queue, Empty  # Thread-safe.
 
         class TQueue(QueueInterface):
             def __init__(self):
@@ -190,6 +214,7 @@ class ThreadingBackend(ConcurrencyInterface):
 
         def currentWorkerName():
             return current_thread().name
+
         return currentWorkerName
 
 
@@ -229,20 +254,20 @@ class MultiProcessingBackend(ConcurrencyInterface):
                 worker. KeyboardInterrupt is natively sent to all workers by
                 multiprocessing."""
 
-                self._process.terminate() # Send SIGTERM.
+                self._process.terminate()  # Send SIGTERM.
                 self.join(verbose=False)
-                runtime.ui.debugC(WRK, "%s killed"% self._name)
+                runtime.ui.debugC(WRK, "%s killed" % self._name)
 
             def start(self):
                 self._process.start()
-                runtime.ui.debugC(WRK, "%s started"% self._name)
+                runtime.ui.debugC(WRK, "%s started" % self._name)
 
             def join(self, verbose=True):
                 if verbose is True:
-                    runtime.ui.debugC(WRK, "%s join"% self._name)
-                self._process.join() # Block until process is done.
+                    runtime.ui.debugC(WRK, "%s join" % self._name)
+                self._process.join()  # Block until process is done.
                 if verbose is True:
-                    runtime.ui.debugC(WRK, "%s joined"% self._name)
+                    runtime.ui.debugC(WRK, "%s joined" % self._name)
 
         return Worker(name, target, args)
 
@@ -294,14 +319,15 @@ class MultiProcessingBackend(ConcurrencyInterface):
 
         def currentWorkerName():
             return current_process().name
+
         return currentWorkerName
 
 
-
 ConcurrencyBackends = {
-    'multiprocessing': MultiProcessingBackend,
-    'threading': ThreadingBackend,
+    "multiprocessing": MultiProcessingBackend,
+    "threading": ThreadingBackend,
 }
+
 
 def Concurrency(backendName: str) -> ConcurrencyInterface:
     """Get the concurrency backend for the requested backend name.
@@ -315,4 +341,4 @@ def Concurrency(backendName: str) -> ConcurrencyInterface:
             SimpleLock = concurrency.createLock
         return concurrency
     except KeyError:
-        raise Exception("unkown backend: %s"% backendName)
+        raise Exception("unkown backend: %s" % backendName)

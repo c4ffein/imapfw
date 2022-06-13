@@ -21,4 +21,5 @@
 # THE SOFTWARE.
 
 
-class DriverFatalError(Exception): pass # For drivers.
+class DriverFatalError(Exception):
+    pass  # For drivers.

@@ -390,24 +390,24 @@ def _raiseError(cls_Exception, reason):
         try:
             raise cls_Exception(reason)
         except AttributeError:
-            raise RuntimeError("exception from receiver cannot be raised %s: %s"%
-                (cls_Exception.__name__, reason))
+            raise RuntimeError("exception from receiver cannot be raised %s: %s" % (cls_Exception.__name__, reason))
+
 
 def receiverRunner(manager):
     name = manager.getName()
-    manager.ui.debugC(EMT, "[runner] %s starts serving"% name)
+    manager.ui.debugC(EMT, "[runner] %s starts serving" % name)
     try:
         manager.serve()
-        manager.ui.debugC(EMT, "[runner] %s stopped serving"% name)
+        manager.ui.debugC(EMT, "[runner] %s stopped serving" % name)
     except Exception as e:
-        manager.ui.debugC(EMT, "[runner] %s interrupted: %s"% (name, e))
+        manager.ui.debugC(EMT, "[runner] %s interrupted: %s" % (name, e))
         raise
 
 
 class _EmitterBase(object):
     def __init__(self):
-        self._emt_triggers = {} # Triggers to waiting to be honored.
-        self._emt_triggerMap = {} # Map of triggers.
+        self._emt_triggers = {}  # Triggers to waiting to be honored.
+        self._emt_triggerMap = {}  # Map of triggers.
 
         # Attributes fixed once instanciated.
         self.ui = None
@@ -423,13 +423,13 @@ class _EmitterBase(object):
         :req type: tuple.
         """
 
-        self.ui.debugC(EMT, "{} sending (({}, {}), ({}, {}, {})",
-            self._emt_name, meta[0], meta[1], req[0], req[1], req[2])
+        self.ui.debugC(
+            EMT, "{} sending (({}, {}), ({}, {}, {})", self._emt_name, meta[0], meta[1], req[0], req[1], req[2]
+        )
 
         self._emt_inQueue.put((meta, req))
 
-    def _emt_setAttributes(self, ui, inQueue, outQueue,
-            controlQueue):
+    def _emt_setAttributes(self, ui, inQueue, outQueue, controlQueue):
         self.ui = ui
         self._emt_inQueue = inQueue
         self._emt_outQueue = outQueue
@@ -444,8 +444,7 @@ class _EmitterBase(object):
 
         def runCallbacks(callbacks, which, reqId, *cargs):
             for callback in callbacks:
-                self.ui.debugC(CLB, "running %s callback %s %s"%
-                    (which, reqId, callback))
+                self.ui.debugC(CLB, "running %s callback %s %s" % (which, reqId, callback))
 
                 func, args, kwargs = callback
                 args = cargs + args
@@ -459,26 +458,22 @@ class _EmitterBase(object):
 
         reqId, status, rargs = response
 
-        self.ui.debugC(EMT, "{} got response ({}, {}, {})",
-            self._emt_name, reqId, status, rargs)
+        self.ui.debugC(EMT, "{} got response ({}, {}, {})", self._emt_name, reqId, status, rargs)
 
-        onCompleteCallbacks, onErrorCallbacks, onSuccessCallbacks = \
-            self._emt_triggers.pop(reqId)
+        onCompleteCallbacks, onErrorCallbacks, onSuccessCallbacks = self._emt_triggers.pop(reqId)
 
-        if status == 'SUCCESS':
+        if status == "SUCCESS":
             # No exception, run callbacks for this reqId. rargs is result.
-            runCallbacks(onSuccessCallbacks, 'onSuccess', reqId, *rargs)
-            runCallbacks(onCompleteCallbacks, 'onComplete', reqId)
+            runCallbacks(onSuccessCallbacks, "onSuccess", reqId, *rargs)
+            runCallbacks(onCompleteCallbacks, "onComplete", reqId)
 
-        else: # 'ERROR'
+        else:  # 'ERROR'
             # Got an exception: clear the triggers, execute callbacks
             # or re-throw.
             cls_Exception, reason = rargs
 
             # The receiver must clear out the remaining triggers ids.
-            self._emt_controlQueue.put(
-                    ('ignoreRequests', list(self._emt_triggers.keys()))
-                    )
+            self._emt_controlQueue.put(("ignoreRequests", list(self._emt_triggers.keys())))
             # Clear out triggers ids.
             self._emt_triggers = {}
 
@@ -486,12 +481,11 @@ class _EmitterBase(object):
                 _raiseError(cls_Exception, reason)
             else:
                 for callback in onErrorCallbacks:
-                    self.ui.debugC(CLB, "running onError callback %s %s"%
-                        (reqId, callback))
+                    self.ui.debugC(CLB, "running onError callback %s %s" % (reqId, callback))
                     func, args, kwargs = callback
-                    func(cls_Exception, reason, *args, **kwargs) # Execute.
+                    func(cls_Exception, reason, *args, **kwargs)  # Execute.
 
-            runCallbacks(onCompleteCallbacks, 'onComplete', reqId)
+            runCallbacks(onCompleteCallbacks, "onComplete", reqId)
 
         return self._emt_needAnotherPass()
 
@@ -515,24 +509,23 @@ class _Receiver(object):
 
         self.ui = ui
 
-        self._obj = manager # Embedd the full manager.
+        self._obj = manager  # Embedd the full manager.
         self._queues = queues
 
         self._delayedRequests = []
         self._waitForControlRequest = False
         self._ignoreIds = []
-        self._name = "receiver%s"% manager.__class__.__name__
+        self._name = "receiver%s" % manager.__class__.__name__
 
     def __getattr__(self, name):
         # Return the requested method of the embedded manager.
-        if name.startswith('_mgr_'):
-            raise AttributeError(
-                "attempted to call '%s' from the receiver"% name)
+        if name.startswith("_mgr_"):
+            raise AttributeError("attempted to call '%s' from the receiver" % name)
 
         return getattr(self._obj, name)
 
     def _debug(self, msg):
-        self.ui.debugC(EMT, "%s %s"% (self._name, msg))
+        self.ui.debugC(EMT, "%s %s" % (self._name, msg))
 
     def _getIncomingRequests(self, requests):
         """Consider the requests available in the incoming queues.
@@ -567,10 +560,12 @@ class _Receiver(object):
                 r = formatRequest(request, outQueue, ctrlQueue)
 
                 if not self._obj._mgr_isLegitEmtter(r.apiName):
-                    self.ui.warn("%s got request from '%s' while it is not a"
+                    self.ui.warn(
+                        "%s got request from '%s' while it is not a"
                         " legit emitter, delaying until reactivated: (%s, %s),"
-                        " (%s, %s, %s)"% (self._name, r.apiName, r.apiName,
-                        r.reqId, r.name, str(r.args), str(r.kwargs)))
+                        " (%s, %s, %s)"
+                        % (self._name, r.apiName, r.apiName, r.reqId, r.name, str(r.args), str(r.kwargs))
+                    )
                     self._delayedRequests.append(r)
                 else:
                     requests.append(r)
@@ -616,7 +611,7 @@ class _Receiver(object):
                         return self._shouldContinueServing()
 
                     ignoreIds = ctrlRequest[1]
-                    self._debug("will ignore %s"% ignoreIds)
+                    self._debug("will ignore %s" % ignoreIds)
 
                     # Ignore all the "to-be-served" requests for this emitter.
                     for ignoreId in ignoreIds:
@@ -633,11 +628,10 @@ class _Receiver(object):
                 # Should we ignore this request?
                 if req.reqId in self._ignoreIds:
                     self._ignoreIds.remove(req.reqId)
-                    self._debug("ignoring %s"% req.reqId)
+                    self._debug("ignoring %s" % req.reqId)
                     continue
 
-                self._debug("execute request %s(%s, %s)"%
-                    (req.name, req.args, req.kwargs))
+                self._debug("execute request %s(%s, %s)" % (req.name, req.args, req.kwargs))
 
                 # Execute the request.
                 result = getattr(self._obj, req.name)(*req.args, **req.kwargs)
@@ -645,11 +639,10 @@ class _Receiver(object):
                 if type(result) is not tuple:
                     result = (result,)
                 # (outQ, reqId, 'SUCCESS', result)
-                self._send(req.outQueue, req.reqId, 'SUCCESS', result)
+                self._send(req.outQueue, req.reqId, "SUCCESS", result)
             except Exception as e:
                 # (outQ, reqId, cls_Exception, reason)
-                self._send(req.outQueue, req.reqId, 'ERROR',
-                    (e.__class__, str(e)))
+                self._send(req.outQueue, req.reqId, "ERROR", (e.__class__, str(e)))
 
                 # In return we expect a control request so we can ignore ids.
                 self._waitForControlRequest = True
@@ -666,11 +659,20 @@ class _Receiver(object):
 
 
 class ManagerInterface(object):
-    def disable(self):      raise NotImplementedError
-    def enable(self):       raise NotImplementedError
-    def stopServing(self):  raise NotImplementedError
-    def getEmitter(self):   raise NotImplementedError
-    def getReceiver(self):  raise NotImplementedError
+    def disable(self):
+        raise NotImplementedError
+
+    def enable(self):
+        raise NotImplementedError
+
+    def stopServing(self):
+        raise NotImplementedError
+
+    def getEmitter(self):
+        raise NotImplementedError
+
+    def getReceiver(self):
+        raise NotImplementedError
 
 
 class Manager(ManagerInterface):
@@ -690,14 +692,14 @@ class Manager(ManagerInterface):
     def __iterExposed(self):
         for name in [attr[0] for attr in inspect.getmembers(self)]:
             # Method names starting with 'ex_' are to be exposed.
-            if name.startswith('ex_'):
-                exposedName = name[3:] # Remove 'ex_' from the name.
+            if name.startswith("ex_"):
+                exposedName = name[3:]  # Remove 'ex_' from the name.
 
                 # Next part is the API name.
-                list_exposedName = exposedName.split('_')
+                list_exposedName = exposedName.split("_")
                 apiName = list_exposedName[0]
                 if len(list_exposedName) > 2:
-                    exposedName = '_'.join(list_exposedName[1:])
+                    exposedName = "_".join(list_exposedName[1:])
                 else:
                     exposedName = list_exposedName[1]
 
@@ -710,10 +712,9 @@ class Manager(ManagerInterface):
                 self.concurrency.createQueue(),
                 self.concurrency.createQueue(),
                 self.concurrency.createQueue(),
-                )
+            )
         if len(queues.keys()) < 1:
-            raise Exception("manager '%s' has no method to expose"%
-                self.__class__.__name__)
+            raise Exception("manager '%s' has no method to expose" % self.__class__.__name__)
         return queues
 
     def _mgr_isLegitEmtter(self, emitterName):
@@ -735,7 +736,7 @@ class Manager(ManagerInterface):
         Implement this facility in your childs (see `stopServing`)."""
 
         if emitterName not in self.__queues:
-            raise Exception("unknown emitter '%s'"% emitterName)
+            raise Exception("unknown emitter '%s'" % emitterName)
 
         if emitterName in self.__legitEmitters:
             self.__legitEmitters.remove(emitterName)
@@ -746,7 +747,7 @@ class Manager(ManagerInterface):
         Implement this facility in your childs (see `stopServing`)."""
 
         if emitterName not in self.__queues:
-            raise Exception("unknown emitter '%s'"% emitterName)
+            raise Exception("unknown emitter '%s'" % emitterName)
 
         if emitterName not in self.__legitEmitters:
             self.__legitEmitters.append(emitterName)
@@ -793,8 +794,7 @@ class Manager(ManagerInterface):
                     reqId = datetime.now().timestamp()
 
                     # Store callbacks for latter use.
-                    self._emt_triggers[reqId] = (onCompleteCallbacks,
-                        onErrorCallbacks, onSuccessCallbacks)
+                    self._emt_triggers[reqId] = (onCompleteCallbacks, onErrorCallbacks, onSuccessCallbacks)
 
                     # Build request.
                     meta = (reqId, apiName)
@@ -815,22 +815,21 @@ class Manager(ManagerInterface):
                 return self.__emitters[apiName]
 
             # Build the class.
-            emitterClassName = "emitter%s(%s)"% (
-                manager.__class__.__name__, apiName)
+            emitterClassName = "emitter%s(%s)" % (manager.__class__.__name__, apiName)
 
             cls_Emitter = type(emitterClassName, (_EmitterBase,), {})
 
             # Attached the _ex* methods so they get exposed.
             exposedNames = []
             for realName, emitterName, exposedName in self.__iterExposed():
-                if exposedName in ['serve', 'serve_received']:
-                    raise Exception("%s tried to expose '%s' which is forbidden"
-                        " name"% (self.__class__.__name__, exposedName))
+                if exposedName in ["serve", "serve_received"]:
+                    raise Exception(
+                        "%s tried to expose '%s' which is forbidden" " name" % (self.__class__.__name__, exposedName)
+                    )
                 # Only expose the methods dedicated to this emitter. We know
                 # this from the api part in the name of the method.
                 if apiName == emitterName:
-                    setattr(cls_Emitter, exposedName,
-                        expose_method(realName, exposedName))
+                    setattr(cls_Emitter, exposedName, expose_method(realName, exposedName))
 
                     exposedNames.append(exposedName)
 
@@ -838,28 +837,28 @@ class Manager(ManagerInterface):
             # Set the attributes to the emitter instance.
             emitter._emt_setAttributes(manager.ui, inQueue, outQueue, controlQueue)
 
-            self.ui.debugC(EMT, "new instance %s: %s"% (emitter.__class__.__name__,
-                [x for x in dir(emitter) if not x.startswith('_')]))
-            return emitter # The instance.
+            self.ui.debugC(
+                EMT,
+                "new instance %s: %s"
+                % (emitter.__class__.__name__, [x for x in dir(emitter) if not x.startswith("_")]),
+            )
+            return emitter  # The instance.
 
         emitter = Emitter(
-            apiName,
-            self.__queues[apiName][0],
-            self.__queues[apiName][1],
-            self.__queues[apiName][2],
-            self)
+            apiName, self.__queues[apiName][0], self.__queues[apiName][1], self.__queues[apiName][2], self
+        )
         return emitter
 
 
-#TODO
-if __name__ == '__main__':
+# TODO
+if __name__ == "__main__":
     #
     # Run this demo like this (from the root directory):
     # python3 -m imapfw.managers.manager
     #
     # We catch exception since it's run as a test in travis.
     #
-    _DEBUG = True # Comment this for less output.
+    _DEBUG = True  # Comment this for less output.
     try:
 
         import time, sys
@@ -867,19 +866,18 @@ if __name__ == '__main__':
         from imapfw.concurrency.concurrency import Concurrency
         from imapfw.ui.tty import TTY
 
-        c = Concurrency('multiprocessing')
+        c = Concurrency("multiprocessing")
         ui = TTY(c.createLock())
         ui.configure()
         if _DEBUG is True:
-            ui.enableDebugCategories(['workers', 'emitters'])
+            ui.enableDebugCategories(["workers", "emitters"])
         ui.setCurrentWorkerNameFunction(c.getCurrentWorkerNameFunction())
 
-        runtime.set_module('ui', ui)
-        runtime.set_module('concurrency', c)
-
+        runtime.set_module("ui", ui)
+        runtime.set_module("concurrency", c)
 
         def demo_simple():
-            ui.info('******** starting simple')
+            ui.info("******** starting simple")
 
             class Simple(Manager):
                 def ex_one_printInfo(self, msg):
@@ -887,16 +885,15 @@ if __name__ == '__main__':
 
             simple = Simple()
             receiver = simple.getReceiver()
-            emitter = simple.getEmitter('one')
-            emitter.printInfo('this is a test')
+            emitter = simple.getEmitter("one")
+            emitter.printInfo("this is a test")
 
             while emitter.process_results():
                 receiver.serve_received()
             ### End Simple ###
 
-
         def demo_disable():
-            ui.info('******** starting disable')
+            ui.info("******** starting disable")
 
             class Simple(Manager):
                 def ex_A_echo(self, msg):
@@ -907,144 +904,133 @@ if __name__ == '__main__':
 
             simple = Simple()
             receiver = simple.getReceiver()
-            a = simple.getEmitter('A')
+            a = simple.getEmitter("A")
 
             a.echo.addOnSuccess(printInfo)
 
-            a.echo('first event')
-            ui.info('disabling A')
+            a.echo("first event")
+            ui.info("disabling A")
 
             while a.process_results():
                 receiver.serve_received()
 
-            simple.disable('A')
-            a.echo('second event') # Just disabled...
+            simple.disable("A")
+            a.echo("second event")  # Just disabled...
 
-            time.sleep(1) # Let the time for the events to arrive.
-            receiver.serve_received() # Got the time, serving previous 'echo' request.
+            time.sleep(1)  # Let the time for the events to arrive.
+            receiver.serve_received()  # Got the time, serving previous 'echo' request.
 
-            ui.info('enabling A')
-            simple.enable('A')
+            ui.info("enabling A")
+            simple.enable("A")
 
-            ui.info('honor triggers')
+            ui.info("honor triggers")
             while a.process_results():
                 receiver.serve_received()
-
 
         def demo_error_handling():
-            ui.info('******** starting error handling')
+            ui.info("******** starting error handling")
 
             class MyDriverManager(Manager):
                 def ex_engine_noop(self):
                     return None
 
                 def ex_engine_error(self):
-                    raise RuntimeError('oops!')
+                    raise RuntimeError("oops!")
 
                 def ex_engine_stopServing(self):
-                    self.stopServing() # Special method.
+                    self.stopServing()  # Special method.
 
             manager = MyDriverManager()
             receiver = manager.getReceiver()
-            emitter = manager.getEmitter('engine')
+            emitter = manager.getEmitter("engine")
 
             def handleError(cls, reason):
-                print("callback for errors got: %s %s"% (cls.__name__, reason))
+                print("callback for errors got: %s %s" % (cls.__name__, reason))
 
             emitter.error.addOnError(handleError)
             emitter.error()
-            emitter.noop() # send a request which must be ignored.
+            emitter.noop()  # send a request which must be ignored.
 
             while emitter.process_results():
                 receiver.serve_received()
             # Will print if noop is executed (should not).
             while emitter.process_results():
                 receiver.serve_received()
-            print("emitter remaining triggers: %s"% emitter._emt_triggers)
+            print("emitter remaining triggers: %s" % emitter._emt_triggers)
             receiver.serve_received()
 
-
         def demo_with_workers():
-            ui.info('******** starting demo with workers')
+            ui.info("******** starting demo with workers")
 
             def driverRunner(receiver):
-                print('driver serving')
+                print("driver serving")
                 receiver.serve()
-                print('driverRuner stopped')
+                print("driverRuner stopped")
 
             def engineRunner(receiver):
-                print('engine serving')
+                print("engine serving")
                 receiver.serve()
-                print('engineRunner stopped')
+                print("engineRunner stopped")
 
             class MyDriverManager(Manager):
                 def ex_engine_connect(self, server):
-                    self.ui.info("connect to %s"% server)
-                    return 'yes!'
+                    self.ui.info("connect to %s" % server)
+                    return "yes!"
 
                 def ex_architect_stopServing(self):
-                    self.stopServing() # Special method.
+                    self.stopServing()  # Special method.
 
                 def ex_engine_stopServing(self):
-                    self.stopServing() # Special method.
+                    self.stopServing()  # Special method.
 
             class MyEngineManager(Manager):
                 def init(self, driver):
                     self._driver = driver
 
                 def _onConnection(self, result, msg):
-                    self.ui.info("%s: %s"% (msg, result))
+                    self.ui.info("%s: %s" % (msg, result))
                     self._driver.stopServing()
 
                 def ex_architect_start(self):
-                    remote = 'imap.imapfw.net'
-                    self._driver.connect.addOnSuccess(self._onConnection,
-                            'connected to %s'% remote)
+                    remote = "imap.imapfw.net"
+                    self._driver.connect.addOnSuccess(self._onConnection, "connected to %s" % remote)
                     self._driver.connect(remote)
                     self._driver.honor()
 
                 def ex_architect_stopServing(self):
-                    self.stopServing() # Special method.
+                    self.stopServing()  # Special method.
 
             driverManager = MyDriverManager()
 
-            driverWorker = c.createWorker('driver.0',
-                driverRunner,
-                (driverManager.getReceiver(),),
-                )
+            driverWorker = c.createWorker("driver.0", driverRunner, (driverManager.getReceiver(),),)
             driverWorker.start()
 
             engineManager = MyEngineManager()
-            engineManager.init(driverManager.getEmitter('engine'))
+            engineManager.init(driverManager.getEmitter("engine"))
 
-            engineWorker = c.createWorker('engine.0',
-                engineRunner,
-                (engineManager.getReceiver(),),
-                )
+            engineWorker = c.createWorker("engine.0", engineRunner, (engineManager.getReceiver(),),)
             engineWorker.start()
 
             def stopNow():
-                print('stop Now!')
+                print("stop Now!")
 
-            engine = engineManager.getEmitter('architect')
-            driver = driverManager.getEmitter('architect')
-
+            engine = engineManager.getEmitter("architect")
+            driver = driverManager.getEmitter("architect")
 
             try:
                 engine.start.addOnComplete(stopNow)
                 engine.start()
                 engine.honor()
             except Exception as e:
-                ui.error("oops: %s"% e)
+                ui.error("oops: %s" % e)
             finally:
                 engine.stopServing()
-                driver.stopServing() # Already stopped if all goes fine.
+                driver.stopServing()  # Already stopped if all goes fine.
 
                 engineWorker.join()
                 driverWorker.join()
 
             ### End with workers ###
-
 
         demo_simple()
         demo_disable()
@@ -1054,5 +1040,5 @@ if __name__ == '__main__':
         sys.exit(0)
 
     except Exception as e:
-        raise # Uncomment while working on this module!
+        raise  # Uncomment while working on this module!
         sys.exit(1)

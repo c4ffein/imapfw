@@ -29,7 +29,7 @@ from imapfw.interface import implements, Interface, checkInterfaces
 from imapfw.annotation import Union
 
 
-ENCODING = 'UTF-8'
+ENCODING = "UTF-8"
 
 
 class FolderInterface(Interface):
@@ -49,19 +49,19 @@ class FolderInterface(Interface):
     def hasChildren(self) -> bool:
         """Return True of False whether this folder has children."""
 
-    def getName(self, encoding: str=ENCODING) -> str:
+    def getName(self, encoding: str = ENCODING) -> str:
         """Return folder base name."""
 
-    def getRoot(self, encoding: str=ENCODING) -> str:
+    def getRoot(self, encoding: str = ENCODING) -> str:
         """Return the path to the folder."""
 
-    def setName(self, name: Union[str, bytes], encoding: str=None) -> None:
+    def setName(self, name: Union[str, bytes], encoding: str = None) -> None:
         """Set the folder base name."""
 
     def setHasChildren(self, hasChildren: bool) -> None:
         """Set if folder has children."""
 
-    def setRoot(self, root: str, encoding: str=ENCODING) -> None:
+    def setRoot(self, root: str, encoding: str = ENCODING) -> None:
         """Set the path to the folder."""
 
 
@@ -70,7 +70,7 @@ class FolderInterface(Interface):
 @implements(FolderInterface)
 class Folder(object):
     def __init__(self, name, encoding=None):
-        self._name = None # Must be bytes.
+        self._name = None  # Must be bytes.
         self.setName(name, encoding)
 
         self._hasChildren = None
@@ -91,16 +91,16 @@ class Folder(object):
     def __str__(self):
         return self.getName()
 
-    def getName(self, encoding: str=ENCODING) -> str:
+    def getName(self, encoding: str = ENCODING) -> str:
         return self._name.decode(encoding)
 
-    def getRoot(self, encoding: str=ENCODING) -> str:
+    def getRoot(self, encoding: str = ENCODING) -> str:
         return self._root.decode(encoding)
 
     def hasChildren(self) -> bool:
         return self._hasChildren
 
-    def setName(self, name: Union[str, bytes], encoding: str=None) -> None:
+    def setName(self, name: Union[str, bytes], encoding: str = None) -> None:
         """Set the name of the folder.
 
         :name: folder name with hierarchy seperated by '/' (e.g.
@@ -116,7 +116,7 @@ class Folder(object):
     def setHasChildren(self, hasChildren: bool) -> None:
         self._hasChildren = hasChildren
 
-    def setRoot(self, root: str, encoding: str=ENCODING) -> None:
+    def setRoot(self, root: str, encoding: str = ENCODING) -> None:
         if type(root) == bytes:
             self._root = root
         else:

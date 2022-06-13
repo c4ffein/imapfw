@@ -9,7 +9,7 @@ and how to structure the underlying code.
 """
 
 __all__ = [
-    'SyncAccounts',
+    "SyncAccounts",
 ]
 
 from imapfw.actions.syncaccounts import SyncAccounts

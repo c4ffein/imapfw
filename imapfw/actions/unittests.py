@@ -68,4 +68,4 @@ class UnitTests(object):
             self._exitCode = len(testResult.failures)
 
 
-Parser.addAction('unitTests', UnitTests, help="run the integrated unit tests")
+Parser.addAction("unitTests", UnitTests, help="run the integrated unit tests")

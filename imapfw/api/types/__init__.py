@@ -9,12 +9,12 @@ and how to structure the underlying code.
 """
 
 __all__ = [
-    'folder',
-    'message',
-    'Account',
-    'Imap',
-    'Maildir',
-    'Repository',
+    "folder",
+    "message",
+    "Account",
+    "Imap",
+    "Maildir",
+    "Repository",
 ]
 
 from imapfw.types import folder

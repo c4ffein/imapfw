@@ -12,7 +12,7 @@ from imapfw.types.folder import Folders, Folder
 from imapfw.types.message import Messages
 
 
-#TODO: remove "reverse" later: the DriverInterface must define all the
+# TODO: remove "reverse" later: the DriverInterface must define all the
 # interfaces of this object.
 @checkInterfaces(reverse=False)
 @adapts(DriverInterface)
@@ -23,11 +23,11 @@ class Imap(Driver):
 
     def __init__(self, *args):
         super(Imap, self).__init__(*args)
-        self.imap = ImapBackend(self.conf.get('backend'))
+        self.imap = ImapBackend(self.conf.get("backend"))
 
     def connect(self):
-        host = self.conf.get('host')
-        port = int(self.conf.get('port'))
+        host = self.conf.get("host")
+        port = int(self.conf.get("port"))
         return self.imap.connect(host, port)
 
     def getCapability(self):
@@ -36,8 +36,7 @@ class Imap(Driver):
     def getFolders(self) -> Folders:
         return self.imap.getFolders()
 
-    def getMessages(self, messages: Messages,
-            attributes: FetchAttributes) -> Messages:
+    def getMessages(self, messages: Messages, attributes: FetchAttributes) -> Messages:
 
         return self.imap.getMessages(messages, attributes)
 
@@ -45,27 +44,27 @@ class Imap(Driver):
         return self.imap.getNamespace()
 
     def login(self) -> None:
-        user = self.conf.get('username')
-        password = self.conf.get('password')
+        user = self.conf.get("username")
+        password = self.conf.get("password")
         return self.imap.login(user, password)
 
     def logout(self) -> None:
         self.imap.logout()
 
-    def searchUID(self, conditions: SearchConditions=SearchConditions()):
+    def searchUID(self, conditions: SearchConditions = SearchConditions()):
         return self.imap.searchUID(conditions)
 
     def select(self, folder: Folder) -> None:
         return self.imap.select(folder)
 
-    #def append(self, server,  mail):
-        #response = server.append(mail)
-        #return response
+    # def append(self, server,  mail):
+    # response = server.append(mail)
+    # return response
 
-    #def update(self, server, mail):
-        #response = server.update(mail)
-        #return response
+    # def update(self, server, mail):
+    # response = server.update(mail)
+    # return response
 
-    #def fetch(self, server, uids):
-        #response = server.fetch(uids)
-        #return response
+    # def fetch(self, server, uids):
+    # response = server.fetch(uids)
+    # return response

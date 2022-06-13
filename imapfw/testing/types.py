@@ -36,7 +36,7 @@ class TestTypeAccount(unittest.TestCase):
         for name, method in inspect.getmembers(interface):
             self.assertEqual(hasattr(account, name), True)
 
-        for name in ['left', 'right']:
+        for name in ["left", "right"]:
             self.assertEqual(hasattr(account, name), True)
 
 
@@ -44,5 +44,5 @@ class TestTypeRepository(unittest.TestCase):
     pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main(verbosity=2)

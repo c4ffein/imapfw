@@ -9,8 +9,8 @@ and how to structure the underlying code.
 """
 
 __all__ = [
-    'SimpleLock',
-    'WorkerSafe',
+    "SimpleLock",
+    "WorkerSafe",
 ]
 
 from imapfw.concurrency.concurrency import SimpleLock, WorkerSafe

@@ -12,17 +12,23 @@ from .folder import Folders
 from imapfw.types.repository import Repository
 
 
-AccountClass = TypeVar('Account based class')
+AccountClass = TypeVar("Account based class")
 
 
 class AccountInternalInterface(object):
-    def fw_getLeft(self):   raise NotImplementedError
-    def fw_getRight(self):  raise NotImplementedError
+    def fw_getLeft(self):
+        raise NotImplementedError
+
+    def fw_getRight(self):
+        raise NotImplementedError
 
 
 class AccountInterface(object):
-    def getClassName(self): raise NotImplementedError
-    def syncFolders(self):  raise NotImplementedError
+    def getClassName(self):
+        raise NotImplementedError
+
+    def syncFolders(self):
+        raise NotImplementedError
 
 
 class Account(AccountInterface, AccountInternalInterface):
@@ -34,11 +40,11 @@ class Account(AccountInterface, AccountInternalInterface):
     right = None
 
     def fw_getSide(self, side: str) -> Repository:
-        if side == 'left':
+        if side == "left":
             return self.fw_getLeft()
-        if side == 'right':
+        if side == "right":
             return self.fw_getRight()
-        assert side in ['left', 'right']
+        assert side in ["left", "right"]
 
     def fw_getLeft(self) -> Repository:
         return loadRepository(self.left)
@@ -75,13 +81,13 @@ def loadAccount(obj: Union[AccountClass, str]) -> Account:
                 raise TypeError()
 
             else:
-                cls_account = type(obj.get('name'), obj.get('type'), {})
+                cls_account = type(obj.get("name"), obj.get("type"), {})
 
                 # Attach attributes.
-                for name in ['left', 'right', 'conf']:
+                for name in ["left", "right", "conf"]:
                     setattr(cls_account, name, obj.get(name))
         except TypeError:
-            raise TypeError("'%s' for a account is not supported"% repr(obj))
+            raise TypeError("'%s' for a account is not supported" % repr(obj))
 
     account = cls_account()
     account.init()

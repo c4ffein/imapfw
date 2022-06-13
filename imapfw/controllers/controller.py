@@ -44,11 +44,12 @@ from imapfw.constants import CTL
 from typing import Union, TypeVar
 
 
-ControllerClass = TypeVar('Controller class and derivates')
+ControllerClass = TypeVar("Controller class and derivates")
 
 
 class ControllerInternalInterface(object):
-    def fw_drive(self):     raise NotImplementedError
+    def fw_drive(self):
+        raise NotImplementedError
 
 
 class Controller(ControllerInternalInterface):
@@ -67,8 +68,9 @@ class Controller(ControllerInternalInterface):
         return getattr(self.driver, name)
 
     def fw_drive(self, driver):
-        runtime.ui.debugC(CTL, "chaining driver '%s' with controller '%s'"%
-            (driver.getClassName(), self.getClassName()))
+        runtime.ui.debugC(
+            CTL, "chaining driver '%s' with controller '%s'" % (driver.getClassName(), self.getClassName())
+        )
         self.driver = driver
 
     def getClassName(self):
@@ -80,20 +82,20 @@ class Controller(ControllerInternalInterface):
         pass
 
 
-def loadController(obj: Union[ControllerClass, dict],
-        repositoryName: str, repositoryConf: dict) -> Controller:
+def loadController(obj: Union[ControllerClass, dict], repositoryName: str, repositoryConf: dict) -> Controller:
 
     if isinstance(obj, dict):
-        cls_controller = obj.get('type') # Must be the controller class.
-        controllerConf = obj.get('conf')
+        cls_controller = obj.get("type")  # Must be the controller class.
+        controllerConf = obj.get("conf")
     else:
         cls_controller = obj
         controllerConf = obj.conf
 
     if not issubclass(cls_controller, Controller):
-        raise TypeError("controller %s of %s does not derivates from"
-            " types.controllers.Controller"%
-            (cls_controller.__name__, repositoryName))
+        raise TypeError(
+            "controller %s of %s does not derivates from"
+            " types.controllers.Controller" % (cls_controller.__name__, repositoryName)
+        )
 
     controller = cls_controller(repositoryName, repositoryConf, controllerConf)
     controller.init()

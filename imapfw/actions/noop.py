@@ -30,4 +30,5 @@ class Noop(object):
     def run(self) -> None:
         pass
 
-Parser.addAction('noop', Noop, help="test if the rascal can be loaded")
+
+Parser.addAction("noop", Noop, help="test if the rascal can be loaded")
