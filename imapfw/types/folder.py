@@ -35,13 +35,9 @@ ENCODING = "UTF-8"
 class FolderInterface(Interface):
     """Internal model representative of a folder.
 
-    Used by any driver, controller or engine. Might be passed to the user via the
-    rascal.
-
+    Used by any driver, controller or engine. Might be passed to the user via the rascal.
     Internal name is the folder name with the levels of hierarchy, type bytes.
-
-    Each driver must use the same representation so that a folder from a driver
-    can be compared to a folder from another driver.
+    Each driver must use the same representation so we can compare folderd from multiple drivers.
     """
 
     scope = Interface.PUBLIC
