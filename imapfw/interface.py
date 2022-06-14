@@ -93,8 +93,7 @@ def checkInterfaces(reverse: bool = True, signatures: bool = True, declare: bool
 
     - declare: check that the class implements its declared interfaces.
     - reverse: check that the interfaces implements all class methods.
-    - signatures: check that the signatures match between the class and the
-      interfaces.
+    - signatures: check that the signatures match between the class and the interfaces.
     """
 
     def checkClass(cls):
