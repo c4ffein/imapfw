@@ -1,5 +1,5 @@
 
-[![imapfw](logo.png)](https://github.com/OfflineIMAP/imapfw)
+# [imapfw](https://github.com/c4ffein/imapfw)
 
 **imapfw is a simple and powerful framework to work with mails.**
 
