@@ -25,7 +25,7 @@ from imapfw import runtime
 from .manager import Manager
 
 from ..constants import DRV
-from ..types.repository import RepositoryInterface
+from ..types.repository import Repository
 
 
 # TODO: catch exceptions?
@@ -59,7 +59,7 @@ class DriverManager(Manager):
     def connect(self, repositoryName):
         """Connect the driver for this repository (name)."""
 
-        repository = self.rascal.get(repositoryName, [RepositoryInterface])
+        repository = self.rascal.get(repositoryName, [Repository])
         repository.fw_init()
 
         # Build the driver.

@@ -10,38 +10,14 @@ from imapfw.drivers.driver import loadDriver, Driver
 RepositoryClass = TypeVar("Repository based class")
 
 
-class RepositoryInterface(object):
+class Repository():
+    """The repository base class.
+
+    The `fw_` namespace is reserved to the framework internals. Any method of this namespace must be overriden."""
 
     conf = None
     driver = None
     isLocal = None
-
-    def getClassName(self):
-        raise NotImplementedError
-
-    def init(self):
-        raise NotImplementedError
-
-
-class RepositoryIntenalInterface(object):
-    def fw_addController(self):
-        raise NotImplementedError
-
-    def fw_getDriver(self):
-        raise NotImplementedError
-
-    def fw_insertController(self):
-        raise NotImplementedError
-
-
-class Repository(RepositoryInterface, RepositoryIntenalInterface):
-    """The repository base class.
-
-    The `fw_` namespace is reserved to the framework internals. Any method of
-    this namespace must be overriden."""
-
-    conf = None
-    driver = None
     controllers = []
 
     def __init__(self):
@@ -94,6 +70,7 @@ class Repository(RepositoryInterface, RepositoryIntenalInterface):
 
 def loadRepository(obj: Union[RepositoryClass, dict]) -> Repository:
 
+    print(obj, Repository)  # TODO
     try:
         if issubclass(obj, Repository):
             cls_repository = obj
@@ -110,20 +87,16 @@ def loadRepository(obj: Union[RepositoryClass, dict]) -> Repository:
             cls_repository = type(obj.get("name"), obj.get("type"), {})
 
             # Attached attributes.
-            for name, mandatory in {
-                "conf": True,
-                "driver": True,
-                "controllers": [],
-            }:
+            for name, mandatory in {"conf": True, "driver": True, "controllers": []}:
                 try:
                     setattr(cls_repository, name, obj.get(name))
                 except KeyError:
                     if mandatory is True:
-                        raise Exception("mandatory key '%s' is not defined for" " %s" % (name, cls_repository.__name__))
+                        raise Exception(f"mandatory key '{name}' is not defined for '{cls_repository.__name__}'")
                     setattr(cls_repository, name, mandatory)
 
         except TypeError:
-            raise TypeError("'%s' for a repository is not supported" % repr(obj))
+            raise TypeError(f"'{repr(obj)}' for a repository is not supported")
 
     repository = cls_repository()
     repository.init()
