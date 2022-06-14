@@ -21,50 +21,7 @@ logging_config = {
 }
 
 
-class UIinterface(object):
-    def critical(self):
-        raise NotImplementedError
-
-    def debug(self):
-        raise NotImplementedError
-
-    def debugC(self):
-        raise NotImplementedError
-
-    def error(self):
-        raise NotImplementedError
-
-    def exception(self):
-        raise NotImplementedError
-
-    def format(self):
-        raise NotImplementedError
-
-    def info(self):
-        raise NotImplementedError
-
-    def infoL(self):
-        raise NotImplementedError
-
-    def setInfoLevel(self):
-        raise NotImplementedError
-
-    def warn(self):
-        raise NotImplementedError
-
-
-class UIbackendInterface(object):
-    def configure(self):
-        raise NotImplementedError
-
-    def enableDebugCategories(self):
-        raise NotImplementedError
-
-    def setCurrentWorkerNameFunction(self):
-        raise NotImplementedError
-
-
-class TTY(UIinterface, UIbackendInterface):
+class TTY():
     def __init__(self, lock):
         self._lock = lock
 
