@@ -47,11 +47,6 @@ from typing import Union, TypeVar
 ControllerClass = TypeVar("Controller class and derivates")
 
 
-class ControllerInternalInterface(object):
-    def fw_drive(self):
-        raise NotImplementedError
-
-
 class Controller(ControllerInternalInterface):
 
     conf = {}
