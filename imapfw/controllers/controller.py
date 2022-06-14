@@ -47,7 +47,7 @@ from typing import Union, TypeVar
 ControllerClass = TypeVar("Controller class and derivates")
 
 
-class Controller(ControllerInternalInterface):
+class Controller():
 
     conf = {}
 
