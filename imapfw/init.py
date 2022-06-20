@@ -34,8 +34,7 @@ class Imapfw(object):
             rascalConfigure = rascal.getFunction("configure")
             rascalConfigure(runtime.ui)
 
-        # "Action", you said? Do you really want action?
-        # Fine...
+        # "Action", you said? Do you really want action? Fine...
         try:
             actionName, cls_action = config.getAction()
         except KeyError as e:

@@ -55,4 +55,4 @@ class Duplicate(Controller):
     def connect(self):
         values = self._call("connect")
 
-    # TODO: implement DriverInterface.
+    # TODO: subclass of Driver

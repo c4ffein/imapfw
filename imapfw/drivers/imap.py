@@ -2,20 +2,14 @@
 # Copyright (c) 2015, Nicolas Sebrecht & contributors.
 
 from imapfw.imap import Imap as ImapBackend
-from imapfw.interface import adapts, checkInterfaces
 
-from .driver import Driver, DriverInterface
+from .driver import Driver
 
 # Annotations.
 from imapfw.imap import SearchConditions, FetchAttributes
-from imapfw.types.folder import Folders, Folder
-from imapfw.types.message import Messages
+from imapfw.types import Folders, Folder, Messages
 
 
-# TODO: remove "reverse" later: the DriverInterface must define all the
-# interfaces of this object.
-@checkInterfaces(reverse=False)
-@adapts(DriverInterface)
 class Imap(Driver):
     """The Imap driver, possibly redefined by the rascal."""
 

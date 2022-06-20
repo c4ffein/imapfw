@@ -4,7 +4,7 @@
 
 import unittest
 
-from imapfw.types.message import Messages, Message
+from imapfw.types import Messages, Message
 
 
 class TestMessage(unittest.TestCase):

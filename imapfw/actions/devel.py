@@ -2,7 +2,6 @@
 # Copyright (c) 2015, Nicolas Sebrecht & contributors.
 
 from imapfw import runtime
-from imapfw.interface import implements, checkInterfaces
 from imapfw.conf import Parser
 
 from .interface import ActionInterface
@@ -11,9 +10,7 @@ from .interface import ActionInterface
 from imapfw.annotation import ExceptionClass
 
 
-@checkInterfaces()
-@implements(ActionInterface)
-class Devel(object):
+class Devel(ActionInterface):
     """For development purpose only."""
 
     honorHooks = False

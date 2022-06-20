@@ -10,8 +10,6 @@ from imapfw.annotation import ExceptionClass
 
 class ActionInterface(Interface):
 
-    scope = Interface.INTERNAL
-
     honorHooks = True
     requireRascal = True
 

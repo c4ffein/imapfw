@@ -1,7 +1,6 @@
 # The MIT License (MIT).
 # Copyright (c) 2015, Nicolas Sebrecht & contributors.
 
-from imapfw.interface import implements, checkInterfaces
 from imapfw.conf import Parser
 
 from .interface import ActionInterface
@@ -10,9 +9,7 @@ from .interface import ActionInterface
 from imapfw.annotation import ExceptionClass
 
 
-@checkInterfaces()
-@implements(ActionInterface)
-class Noop(object):
+class Noop(ActionInterface):
     """The noop action allows testing the loading of the rascal."""
 
     honorHooks = False

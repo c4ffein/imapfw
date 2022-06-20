@@ -5,8 +5,7 @@ import inspect
 
 from imapfw import runtime
 from imapfw.constants import DRV
-from imapfw.types.account import loadAccount
-from imapfw.types.repository import Repository, loadRepository
+from imapfw.types.repository import Repository
 
 # Annotations.
 from imapfw.edmp import Receiver
@@ -18,11 +17,8 @@ class DriverRunner(object):
 
     Runs a complete low-level driver in a worker.
 
-    The low-level drivers and controllers use the same low-level interface which
-    is directly exposed to the engine.
-
-    Also, this runner allows to re-use any running worker with different
-    repositories during its lifetime. This feature is a required by design.
+    The low-level drivers and controllers use the same low-level interface which is directly exposed to the engine.
+    Also, this runner allows to re-use any running worker with different repositories during its lifetime.
     """
 
     # FIXME: unused workerName
@@ -38,10 +34,8 @@ class DriverRunner(object):
         runtime.ui.debugC(DRV, "%s %s" % (self.repositoryName, msg))
 
     def _debugBuild(self):
-        runtime.ui.debugC(
-            DRV, "built driver '{}' for '{}'", self.driver.getClassName(), self.driver.getRepositoryName()
-        )
-        runtime.ui.debugC(DRV, "'{}' has conf {}", self.repositoryName, self.driver.conf)
+        runtime.ui.debugC(DRV, f"built driver '{self.driver.__class__.__name__}' for '{self.driver.repositoryName}'")
+        runtime.ui.debugC(DRV, f"'{self.repositoryName}' has conf {self.driver.conf}")
 
     def _driverAccept(self) -> None:
         for name, method in inspect.getmembers(self.driver, inspect.ismethod):
@@ -55,7 +49,7 @@ class DriverRunner(object):
         runtime.ui.info("%s %s" % (self.repositoryName, msg))
 
     def _buildDriver(self, repository: Repository) -> None:
-        self.repositoryName = repository.getClassName()
+        self.repositoryName = repository.name
         self.driver = repository.fw_getDriver()
         self._driverAccept()
         self._debugBuild()
@@ -67,21 +61,15 @@ class DriverRunner(object):
         if reuse is True and self.driver is not None:
             return None
 
-        account = loadAccount(accountName)
-        repository = account.fw_getSide(side)
+        account = runtime.rascal.getAccount(accountName)
+        assert side in ["left", "right"]
+        repository = account.left if side == "left" else account.right if side == "right" else None
         self._buildDriver(repository)
 
     def buildDriverFromRepositoryName(self, repositoryName: str, reuse: bool = False) -> None:
-        """Build the driver object in the worker from this repository name.
-
-        The repository must be globally defined in the rascal."""
-
-        if reuse is True and self.driver is not None:
-            return None
-
-        cls_repository = runtime.rascal.get(repositoryName, [Repository])
-        repository = loadRepository(cls_repository)
-        self._buildDriver(repository)
+        """Build the driver object in the worker from this repository name."""
+        if reuse is not True or self.driver is None:
+            self._buildDriver(runtime.rascal.getRepository(repositoryName))
 
     def isDriverBuilt(self) -> bool:
         return self.driver is not None

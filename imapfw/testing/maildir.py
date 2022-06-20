@@ -27,7 +27,7 @@ from imapfw import runtime
 from imapfw.api import drivers
 from imapfw.drivers.driver import loadDriver
 from imapfw.testing import libcore
-from imapfw.types.folder import Folders, Folder
+from imapfw.types import Folders, Folder
 
 
 class TestMaildirDriver(unittest.TestCase):

@@ -10,7 +10,6 @@ from imapfw.interface import implements, Interface, checkInterfaces
 from imapfw.annotation import List
 
 
-# TODO: interface.
 class MessageAttributes(object):
     def __init__(self):
         self.flags = []
@@ -30,7 +29,6 @@ class MessageAttributes(object):
         self.internaldate = internaldate
 
 
-# TODO: interface.
 @total_ordering
 class Message(object):
     def __init__(self, uid: int):
@@ -73,7 +71,6 @@ class Message(object):
         self.attributes = attributes
 
 
-# TODO: interface.
 class Messages(UserDict):
     """A collection of messages, by UID."""
 
@@ -86,10 +83,7 @@ class Messages(UserDict):
         self.update({message.getUID(): message})
 
     def coalesceUIDs(self) -> str:
-        """Return a string of coalesced continous ranges and UIDs.
-
-        E.g.: '1,3:7,9'
-        """
+        """Return a string of coalesced continous ranges and UIDs. E.g.: '1,3:7,9'"""
 
         uids = []  # List of UIDs and coalesced sub-sequences ['1', '3:7', '9'].
 
@@ -101,8 +95,7 @@ class Messages(UserDict):
         start = None
         end = None
         for uid in self.keys():
-            if start is None:
-                # First item.
+            if start is None:  # First item.
                 start, end = uid, uid
                 continue
 

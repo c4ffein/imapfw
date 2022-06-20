@@ -33,7 +33,7 @@ class ImapA(types.Imap):
 
 class MShell(shells.Shell):
     def session(self):
-        from imapfw.types.message import Messages, Message as M
+        from imapfw.types import Messages, Message as M
 
         self.M = M
         self.register('M')

@@ -2,11 +2,8 @@
 # Used by me to development purposes.
 #
 
-MainConf = {
-    # The number of concurrent workers for the accounts. Default is the number
-    # of accounts to sync.
-    'max_sync_accounts': 2,
-}
+# The number of concurrent workers for the accounts. Default is the number of accounts to sync.
+MainConf = { 'max_sync_accounts': 2 }
 
 UI = None
 
@@ -28,41 +25,31 @@ from imapfw.api import controllers, types, drivers, shells
 maildirsPath = "~/.imapfw/Mail"
 
 
-MaildirConfA = {
-    'path': maildirsPath + '/MaildirA',
-    'max_connections': 9,
-}
-
-MaildirConfB = {
-    'path': maildirsPath + '/MaildirB',
-    'max_connections': 2,
-}
+MaildirConfA = { 'path': maildirsPath + '/MaildirA', 'max_connections': 9 }
+MaildirConfB = { 'path': maildirsPath + '/MaildirB', 'max_connections': 2 }
 
 ImapConfA = {
-    'backend':  'imaplib3',
-    'host':      '127.0.0.1',
-    'port':     '10143',
-    'username': 'nicolas',
-    'password': 'sebrecht',
-    'max_connections': 3,
+    **{ 'backend': 'imaplib3', 'host': '127.0.0.1', 'port': '10143', 'max_connections': 3 },
+    **{ 'username': 'nicolas',    'password': 'sebrecht' },
 }
 
 class FakeMaildirA(controllers.FakeDriver):
     conf = controllers.FakeDriver.MaildirConf
-
-class MaildirA(types.Maildir):
-    conf = MaildirConfA
-    driver = drivers.Maildir # Default: drivers.Maildir.
-    controllers = [FakeMaildirA]
-
-
 class FakeMaildirB(controllers.FakeDriver):
     conf = controllers.FakeDriver.MaildirConf
 
-class MaildirB(types.Maildir):
-    conf = MaildirConfB
-    driver = drivers.Maildir # Default: drivers.Maildir.
-    controllers = [FakeMaildirB]
+#class MaildirA(types.Maildir): #    conf = MaildirConfA #    driver = drivers.Maildir # Default: drivers.Maildir. #    controllers = [FakeMaildirA]
+#class MaildirB(types.Maildir): #    conf = MaildirConfB #    driver = drivers.Maildir # Default: drivers.Maildir. #    controllers = [FakeMaildirB]
+
+#FakeDrivers={
+#    "FakeMaildirB": { "conf": controllers.FakeDriver.MaildirConf }
+#}
+
+
+Maildirs={
+    "MaildirA": { "conf": MaildirConfA, "driver": drivers.Maildir, "controllers": [FakeMaildirA] },
+    "MaildirB": { "conf": MaildirConfB, "driver": drivers.Maildir, "controllers": [FakeMaildirB] },
+}
 
 
 class FakeImapA(controllers.FakeDriver):
@@ -74,13 +61,11 @@ class ImapA(types.Imap):
     controllers = [FakeImapA]
 
 
-class Home(types.Account):
-    left = MaildirA
-    right = ImapA
+#class Home(types.Account):#    left = "MaildirA"  # TODO ADAPT #    right = "ImapA"  # TODO ADAPT
+#class Foundation(types.Account): #    left = "MaildirB"  # TODO ADAPT #    right = "ImapA"  # TODO ADAPT
 
-class Foundation(types.Account):
-    left = MaildirB
-    right = ImapA
+Home = { "left": "MaildirA", "right": "ImapA" }
+Foundation = { "left": "MaildirB", "right": "ImapA" }
 
 
 # To work on IMAP driver.
@@ -93,11 +78,16 @@ class DriveDriver(shells.DriveDriver):
         self.interactive()
         d.logout()
 
-class DriveMaildirA(DriveDriver):
-    conf = {'repository': MaildirA}
+#TODO : Mechanism to put the good repository in _nrascal
+#class DriveMaildirA(DriveDriver):
+#    conf = {'repository': MaildirA}
+#class DriveImapA(DriveDriver):
+#    conf = {'repository': ImapA}
 
-class DriveImapA(DriveDriver):
-    conf = {'repository': ImapA}
+DriveDrivers={
+    "DriveMaildirA": { "conf": {"repository": "MaildirA" } },
+    "DriveImapA": { "conf": {"repository": "ImapA" } },
+}
 
 
 # To work on messages.

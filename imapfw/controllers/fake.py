@@ -1,8 +1,10 @@
 # The MIT License (MIT).
 # Copyright (c) 2015, Nicolas Sebrecht & contributors.
 
-from imapfw.types.folder import Folders, Folder
-from imapfw.types.message import Messages, Message
+from imapfw.types import Folders, Folder, Messages, Message
+# TODO : C4ffein : REMOVE
+#from imapfw.types.folder import Folders, Folder
+#from imapfw.types.message import Messages, Message
 
 from .controller import Controller
 
@@ -18,8 +20,7 @@ class FakeDriver(Controller):
     def __getattr__(self, name):
         if name.startswith("fw_"):
             return getattr(self.driver, name)
-        message = "FakeDriver %s did not handle call to '%s'" % (self.getClassName(), name)
-        raise AttributeError(message)
+        raise AttributeError(f"FakeDriver {self.__class__.__name__} did not handle call to '{name}'")
 
     def _folders(self):
         folders = Folders()
@@ -32,12 +33,6 @@ class FakeDriver(Controller):
 
     def getCapability(self):
         return ["TODO=CAPABILITY"]  # TODO
-
-    def getClassName(self):
-        return self.__class__.__name__
-
-    def getDriverClassName(self):
-        return self.driver.getClassName()
 
     def getFolders(self):
         return self._folders()

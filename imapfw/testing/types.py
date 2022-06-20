@@ -30,11 +30,7 @@ from imapfw.types.repository import *
 
 class TestTypeAccount(unittest.TestCase):
     def test_account_interface(self):
-        interface = AccountInterface()
         account = Account()
-
-        for name, method in inspect.getmembers(interface):
-            self.assertEqual(hasattr(account, name), True)
 
         for name in ["left", "right"]:
             self.assertEqual(hasattr(account, name), True)

@@ -32,43 +32,16 @@ from imapfw.annotation import Union
 ENCODING = "UTF-8"
 
 
-class FolderInterface(Interface):
+@total_ordering
+class Folder(object):
     """Internal model representative of a folder.
 
     Used by any driver, controller or engine. Might be passed to the user via the rascal.
     Internal name is the folder name with the levels of hierarchy, type bytes.
     Each driver must use the same representation so we can compare folderd from multiple drivers.
     """
-
-    scope = Interface.PUBLIC
-
-    def hasChildren(self) -> bool:
-        """Return True of False whether this folder has children."""
-
-    def getName(self, encoding: str = ENCODING) -> str:
-        """Return folder base name."""
-
-    def getRoot(self, encoding: str = ENCODING) -> str:
-        """Return the path to the folder."""
-
-    def setName(self, name: Union[str, bytes], encoding: str = None) -> None:
-        """Set the folder base name."""
-
-    def setHasChildren(self, hasChildren: bool) -> None:
-        """Set if folder has children."""
-
-    def setRoot(self, root: str, encoding: str = ENCODING) -> None:
-        """Set the path to the folder."""
-
-
-@total_ordering
-@checkInterfaces()
-@implements(FolderInterface)
-class Folder(object):
     def __init__(self, name, encoding=None):
-        self._name = None  # Must be bytes.
-        self.setName(name, encoding)
-
+        self.setName(name, encoding)  # Must be bytes.
         self._hasChildren = None
         self._root = None
 
@@ -88,31 +61,31 @@ class Folder(object):
         return self.getName()
 
     def getName(self, encoding: str = ENCODING) -> str:
+        """Return folder base name."""
         return self._name.decode(encoding)
 
     def getRoot(self, encoding: str = ENCODING) -> str:
+        """Return the path to the folder."""
         return self._root.decode(encoding)
 
     def hasChildren(self) -> bool:
+        """Return True of False whether this folder has children."""
         return self._hasChildren
 
     def setName(self, name: Union[str, bytes], encoding: str = None) -> None:
-        """Set the name of the folder.
+        """Set the folder base name.
 
-        :name: folder name with hierarchy seperated by '/' (e.g.
-        'a/folder').
+        :name: folder name with hierarchy seperated by '/' (e.g. 'a/folder'). # TODO : C4FEIN : SECURITY
         :encoding: encoding of the name. Expects bytes if not set.
         """
-
-        if type(name) == bytes:
-            self._name = name
-        else:
-            self._name = name.encode(encoding)
+        self._name = name if type(name) == bytes else name.encode(encoding)
 
     def setHasChildren(self, hasChildren: bool) -> None:
+        """Set if folder has children."""
         self._hasChildren = hasChildren
 
     def setRoot(self, root: str, encoding: str = ENCODING) -> None:
+        """Set the path to the folder."""
         if type(root) == bytes:
             self._root = root
         else:

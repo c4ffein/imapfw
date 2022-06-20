@@ -27,8 +27,6 @@ from imapfw.annotation import Function
 
 class ArchitectInterface(Interface):
 
-    scope = Interface.INTERNAL
-
     def kill(self) -> None:
         """Kill worker."""
 

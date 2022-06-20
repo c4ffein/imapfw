@@ -3,41 +3,9 @@
 
 
 from imapfw import runtime
-from imapfw.interface import implements, Interface, checkInterfaces
 
 
-class ShellInterface(Interface):
-
-    scope = Interface.PUBLIC
-
-    def afterSession(self) -> int:
-        """What to do on exit. Return the exit code."""
-
-    def beforeSession(self) -> None:
-        """Method to set up the environment."""
-
-    def configureCompletion(self) -> None:
-        """Configure the complement for theinteractive session."""
-
-    def interactive(self) -> None:
-        """Start the interactive session when called."""
-
-    def register(self, name: str, alias: str = None) -> None:
-        """Add a variable to the interactive environment.
-
-        Attribute name to pass to the interpreter.  The name MUST be an
-        attribute of this object."""
-
-    def session(self) -> None:
-        """Build driver and start interactive mode."""
-
-    def setBanner(self, banner: str) -> None:
-        """Erase the default banner."""
-
-
-@checkInterfaces()
-@implements(ShellInterface)
-class Shell(object):
+class Shell():
 
     conf = None
 
@@ -46,9 +14,11 @@ class Shell(object):
         self.banner = "Welcome"
 
     def afterSession(self) -> int:
+        """What to do on exit. Return the exit code."""
         return 0
 
     def configureCompletion(self) -> None:
+        """Configure the complement for theinteractive session."""
         try:
             from jedi.utils import setup_readline
 
@@ -56,19 +26,21 @@ class Shell(object):
         except ImportError:
             # Fallback to the stdlib readline completer if it is installed.
             # Taken from http://docs.python.org/2/library/rlcompleter.html
-            runtime.ui.info("jedi is not installed, falling back to readline" " for completion")
+            runtime.ui.info("jedi is not installed, falling back to readline for completion")
             try:
                 import readline
                 import rlcompleter
 
                 readline.parse_and_bind("tab: complete")
             except ImportError:
-                runtime.ui.info("readline is not installed either." " No tab completion is enabled.")
+                runtime.ui.info("readline is not installed either. No tab completion is enabled.")
 
     def beforeSession(self) -> None:
+        """Method to set up the environment."""
         pass
 
     def interactive(self) -> None:
+        """Start the interactive session when called."""
         import code
 
         try:
@@ -77,24 +49,23 @@ class Shell(object):
             pass
 
     def register(self, name: str, alias: str = None) -> None:
+        """Add a variable to the interactive environment.
+
+        Attribute name to pass to the interpreter.  The name MUST be an
+        attribute of this object."""
         if alias is None:
             alias = name
         self._env[alias] = getattr(self, name)
 
     def session(self) -> None:
+        """Build driver and start interactive mode."""
         self.interactive()
 
     def setBanner(self, banner: str) -> None:
+        """Erase the default banner."""
         self.banner = banner
 
 
-class DriveDriverInterface(Interface):
-    def buildDriver(self) -> None:
-        """Build the driver for the repository in conf."""
-
-
-@checkInterfaces()
-@implements(ShellInterface, DriveDriverInterface)
 class DriveDriver(Shell):
     """Shell to play with a repository. Actually drive the driver yourself.
 
@@ -124,19 +95,18 @@ class DriveDriver(Shell):
         return 0
 
     def buildDriver(self) -> None:
-        self.d.buildDriverFromRepositoryName(self.repository.getClassName())
+        """Build the driver for the repository in conf."""
+        self.d.buildDriverFromRepositoryName(self.repository.name)
 
     def beforeSession(self) -> None:
         import inspect
 
         from imapfw.runners.driver import DriverRunner
-        from imapfw.types.repository import loadRepository
         from imapfw.architects import DriverArchitect
         from imapfw.edmp import SyncEmitter
 
-        self.repository = loadRepository(self.conf.get("repository"))
-        repositoryName = self.repository.getClassName()
-        self.driverArchitect = DriverArchitect("%s.Driver" % repositoryName)
+        self.repository = runtime.rascal.getRepository(self.conf.get("repository"))
+        self.driverArchitect = DriverArchitect(f"{self.repository.name}.Driver")
         self.driverArchitect.init()
         self.driverArchitect.start()
         self.driverArch = self.driverArchitect

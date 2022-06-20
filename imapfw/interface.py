@@ -215,5 +215,3 @@ def implements(*args):
 class Interface(object):
     INTERNAL = "__INTERNAL__"
     PUBLIC = "__PUBLIC__"
-
-    scope = None  # Must be defined.

@@ -5,16 +5,14 @@
 
 A controller is defined on a repository to control its end-driver.
 
-Controllers have the same public interface as the drivers. Each responds like a
-driver, does its job and relays the requests (and results) to (or from) the
-underlying driver.
+Controllers have the same public interface as the drivers. Each responds like a driver, does its job and relays the
+requests (and results) to (or from) the underlying driver.
 
 Controllers can be chained to each others so that the flows pass through each.
 
-They can either be passive or active. Passive controllers follow-up the requests
-as-is and returns the unchanged results. Active controllers changes the flow to
-achieve their tasks. IOW, each controller can only view what the underlying
-controller accepts to show. Hence, the order in the chain is important.
+They can either be passive or active. Passive controllers follow-up the requests as-is and returns the unchanged
+results. Active controllers changes the flow to achieve their tasks. IOW, each controller can only view what the
+underlying controller accepts to show. Hence, the order in the chain is important.
 
 The controller base "Controller" is a passive controller (see code below).
 
@@ -64,12 +62,9 @@ class Controller():
 
     def fw_drive(self, driver):
         runtime.ui.debugC(
-            CTL, "chaining driver '%s' with controller '%s'" % (driver.getClassName(), self.getClassName())
+            CTL, f"chaining driver '{driver.__class__.__name__}' with controller '{self.__class__.__name__}'"
         )
         self.driver = driver
-
-    def getClassName(self):
-        return self.__class__.__name__
 
     def init(self):
         """Override this method to make initialization in the rascal."""
@@ -88,8 +83,7 @@ def loadController(obj: Union[ControllerClass, dict], repositoryName: str, repos
 
     if not issubclass(cls_controller, Controller):
         raise TypeError(
-            "controller %s of %s does not derivates from"
-            " types.controllers.Controller" % (cls_controller.__name__, repositoryName)
+            f"controller {self.driver.conf} of {repositoryName} does not derivates from types.controllers.Controller"
         )
 
     controller = cls_controller(repositoryName, repositoryConf, controllerConf)

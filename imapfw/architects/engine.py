@@ -25,8 +25,6 @@ class EngineArchitectInterface(Interface):
 
     Aggregate the engine architect and the drivers."""
 
-    scope = Interface.INTERNAL
-
     def getLeftEmitter(self) -> Emitter:
         """Return the emitter of the left-side driver."""
 

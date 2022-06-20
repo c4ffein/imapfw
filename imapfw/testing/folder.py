@@ -22,7 +22,7 @@
 
 import unittest
 
-from imapfw.types.folder import Folders, Folder
+from imapfw.types import Folders, Folder
 
 
 class TestFolder(unittest.TestCase):

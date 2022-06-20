@@ -8,37 +8,12 @@ from imapfw.runners import DriverRunner, topRunner
 
 from .debug import debugArchitect
 
-# Interfaces.
-from imapfw.interface import implements, Interface, checkInterfaces
-
 # Annotations.
 from imapfw.edmp import Emitter
 
 
-class DriverArchitectInterface(object):
-    def _debug(self, msg) -> None:
-        """Debug."""
-
-    def getEmitter(self) -> Emitter:
-        """Return the emitter for the driver."""
-
-    def init(self) -> None:
-        """Initialize object."""
-
-    def kill(self) -> None:
-        """Kill the driver."""
-
-    def start(self) -> None:
-        """Start the driver."""
-
-    def stop(self) -> None:
-        """Stop the driver."""
-
-
 @debugArchitect
-@checkInterfaces()
-@implements(DriverArchitectInterface)
-class DriverArchitect(object):
+class DriverArchitect():
     """Architect to manage a driver worker."""
 
     def __init__(self, workerName: str):
@@ -51,36 +26,40 @@ class DriverArchitect(object):
         self._debug("__init__(%s)" % workerName)
 
     def _debug(self, msg) -> None:
+        """Debug."""
         runtime.ui.debugC(ARC, "%s %s" % (self.workerName, msg))
 
     def getEmitter(self) -> Emitter:
+        """Return the emitter for the driver."""
         self._debug("getEmitter()")
         assert self.emitter is not None
         return self.emitter
 
     def init(self) -> None:
+        """Initialize object."""
         receiver, self.emitter = newEmitterReceiver(self.workerName)
         driverRunner = DriverRunner(self.workerName, receiver)
 
         self.worker = runtime.concurrency.createWorker(self.workerName, topRunner, (self.workerName, driverRunner.run))
 
     def kill(self) -> None:
+        """Kill the driver."""
         self._debug("kill()")
         self.emitter.stopServing()
         self.worker.kill()
 
     def start(self) -> None:
+        """Start the driver."""
         self._debug("start()")
         self.worker.start()
 
     def stop(self) -> None:
+        """Stop the driver."""
         self._debug("stop()")
         self.emitter.stopServing()
         self.worker.join()
 
 
-@checkInterfaces()
-@implements(DriverArchitectInterface)
 class ReuseDriverArchitect(DriverArchitect):
     """Architect to manage a driver worker with en emitter already defined."""
 
@@ -106,31 +85,8 @@ class ReuseDriverArchitect(DriverArchitect):
         self.emitter.stopServing()
 
 
-class DriversArchitectInterface(Interface):
-    """Manage driver architects."""
-
-    scope = Interface.INTERNAL
-
-    def getEmitter(self, number: int) -> Emitter:
-        """Return the emitter for given number."""
-
-    def init(self) -> None:
-        """Setup and start end-drivers."""
-
-    def kill(self) -> None:
-        """Kill the workers."""
-
-    def start(self) -> None:
-        """Start the workers."""
-
-    def stop(self) -> None:
-        """Stop the workers."""
-
-
-@checkInterfaces()
-@implements(DriversArchitectInterface)
-class DriversArchitect(object):
-    """Handles a collection of DriverArchitect."""
+class DriversArchitect():
+    """Manage driver architects. / Handles a collection of DriverArchitect."""
 
     def __init__(self, workerName: str, number: int):
         self.workerName = workerName
@@ -139,9 +95,11 @@ class DriversArchitect(object):
         self.driverArchitects = {}
 
     def getEmitter(self, number: int) -> Emitter:
+        """Return the emitter for given number."""
         return self.driverArchitects[number].getEmitter()
 
     def init(self) -> None:
+        """Setup and start end-drivers."""
         for i in range(self.number):
             workerName = "%s.Driver.%i" % (self.workerName, i)
             driver = DriverArchitect(workerName)
@@ -149,13 +107,16 @@ class DriversArchitect(object):
             self.driverArchitects[i] = driver
 
     def kill(self) -> None:
+        """Kill the workers."""
         for architect in self.driverArchitects.values():
             architect.kill()
 
     def start(self) -> None:
+        """Start the workers."""
         for architect in self.driverArchitects.values():
             architect.start()
 
     def stop(self) -> None:
+        """Stop the workers."""
         for architect in self.driverArchitects.values():
             architect.stop()

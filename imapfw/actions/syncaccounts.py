@@ -2,7 +2,6 @@
 # Copyright (c) 2015, Nicolas Sebrecht & contributors.
 
 from imapfw import runtime
-from imapfw.interface import implements, checkInterfaces
 from imapfw.conf import Parser
 from imapfw.architects.account import SyncAccountsArchitect
 
@@ -12,9 +11,7 @@ from .interface import ActionInterface
 from imapfw.annotation import ExceptionClass
 
 
-@checkInterfaces()
-@implements(ActionInterface)
-class SyncAccounts(object):
+class SyncAccounts(ActionInterface):
     """Sync the requested accounts as defined in the rascal, in async mode."""
 
     honorHooks = True

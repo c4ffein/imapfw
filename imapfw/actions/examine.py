@@ -2,10 +2,9 @@
 # Copyright (c) 2015, Nicolas Sebrecht & contributors.
 
 from imapfw import runtime
-from imapfw.types.account import Account, loadAccount
+from imapfw.types.account import Account
 from imapfw.controllers.examine import ExamineController
-from imapfw.drivers.driver import DriverInterface
-from imapfw.interface import implements, checkInterfaces
+from imapfw.drivers.driver import Driver
 from imapfw.conf import Parser
 
 from .interface import ActionInterface
@@ -14,9 +13,7 @@ from .interface import ActionInterface
 from imapfw.annotation import ExceptionClass, Dict
 
 
-@checkInterfaces()
-@implements(ActionInterface)
-class Examine(object):
+class Examine(ActionInterface):
     """Examine repositories (all run sequentially)."""
 
     honorHooks = False
@@ -72,23 +69,17 @@ class Examine(object):
                     if kind == "line":
                         print(args[0])
 
-        cls_accounts = runtime.rascal.getAll([Account])
-
-        repositories = []
-        for cls_account in cls_accounts:
-            account = loadAccount(cls_account)
-            repositories.append(account.fw_getLeft())
-            repositories.append(account.fw_getRight())
+        repositories = runtime.rascal.repositories.value
 
         report = Report()
         for repository in repositories:
-            if isinstance(repository, DriverInterface):
+            if isinstance(repository, Driver):
                 continue
             try:
                 repository.fw_insertController(ExamineController, {"report": report})
                 driver = repository.fw_getDriver()
 
-                report.title("Repository %s (driver %s)" % (repository.getClassName(), driver.getDriverClassName()))
+                report.title(f"Repository {repository.__class__.__name__} (driver {driver.__class__.__name__})")
                 report.line("controllers: %s" % [x.__name__ for x in repository.controllers])
 
                 driver.connect()

@@ -14,8 +14,7 @@ from importlib import import_module
 
 from imapfw import runtime
 from imapfw.constants import IMAP
-from imapfw.types.folder import Folders, Folder
-from imapfw.types.message import Messages, Message
+from imapfw.types import Folders, Folder, Messages, Message
 
 # Annotations.
 from imapfw.annotation import List, Dict, Union

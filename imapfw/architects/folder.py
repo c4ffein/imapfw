@@ -14,7 +14,7 @@ from .architect import Architect
 # Annotations.
 from imapfw.edmp import Emitter
 from imapfw.concurrency import Queue
-from imapfw.types.folder import Folders
+from imapfw.types import Folders
 
 
 class SyncFolderArchitect(object):

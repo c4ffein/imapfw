@@ -42,16 +42,16 @@ The receiver must define the callable to each supported event.
 
 >>> def on_printInfo(info):
 >>>     print(info)
->>> 
+>>>
 >>> receiver, emitter = emp.newEmitterReceiver('test')
 >>> receiver.accept('printInfo', on_printInfo)
 >>> emitter.printInfo('It works!')
 >>> emitter.stopServing()
->>> 
+>>>
 >>> while receiver.react():
 >>>     pass
 It works!
->>> 
+>>>
 
 In this extract, the emitter is sending the event 'printInfo'. The receiver
 reacts by calling the function 'on_printInfo'.
@@ -77,23 +77,23 @@ sequential. So, it's fine to use a receiver like that:
 >>> class EventHandler(object):
 >>>     def __init__(self, receiver):
 >>>         self._receiver = receiver
->>> 
+>>>
 >>>         receiver.accept('longRequest', self._longRequest)
 >>>         receiver.accept('getResult_longRequest', self._withResult_longRequest)
->>> 
+>>>
 >>>         self._result = None
->>> 
+>>>
 >>>     def _longRequest(self):
 >>>         # Code taking a very long time; self._result gets True or
 >>>         # False.
 >>>         if condition:
 >>>             self._result = False
 >>>         self._result = True
->>> 
+>>>
 >>>     def _withResultOfLongRequest_do(self):
 >>>         if self._result is True: # Real value set by longRequest().
 >>>             doSomething()
->>> 
+>>>
 >>>     def serve(self):
 >>>         while self._receiver.react():
 >>>             pass

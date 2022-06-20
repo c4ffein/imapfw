@@ -3,7 +3,6 @@
 
 from imapfw import runtime
 from imapfw.shells import Shell
-from imapfw.interface import implements, checkInterfaces
 from imapfw.conf import Parser
 
 from .interface import ActionInterface
@@ -12,9 +11,7 @@ from .interface import ActionInterface
 from imapfw.annotation import ExceptionClass
 
 
-@checkInterfaces()
-@implements(ActionInterface)
-class ShellAction(object):
+class ShellAction(ActionInterface):
     """Run in (interactive) shell mode."""
 
     honorHooks = False

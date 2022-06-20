@@ -81,31 +81,25 @@ ImapConfExample = {
     'max_connections': 2,
 }
 
-ImapRepositoryExample = {
-    'name': 'ImapRepositoryExample',
-    'type': types.Imap,
-    'conf': ImapConfExample,
-    'driver': drivers.Imap,
+Imaps = {
+    "ImapRepositoryExample": {
+        **{ 'conf': ImapConfExample, 'driver': drivers.Imap }
+    }
 }
+# ImapRepositoryExample = {
+#     **{ 'name': 'ImapRepositoryExample', 'type': types.Imap, 'conf': ImapConfExample, 'driver': drivers.Imap }
+# }
 
 
 ############
 # ACCOUNTS #
 ############
 
-
-#
 # The main configuration options are set in this dict.
-#
-# Everything can be defined in this dict. However, we encourage to use variables
-# for clarity.
-#
+# Everything can be defined in this dict. However, we encourage to use variables for clarity.
 MainConf = {
-    # The number of concurrent workers for the accounts. Default is the number
-    # of accounts to sync.
-    'max_sync_accounts': 2,
-    # The list of accounts.
-    'accounts': [
+    'max_sync_accounts': 2,  # number of concurrent workers for the accounts, default to the number of accounts to sync
+    'accounts': [  # The list of accounts.
         {
             'name': 'AccountExample',
             'type': types.Account,
@@ -117,12 +111,9 @@ MainConf = {
 
                 # repository attributes.
                 'driver': drivers.Maildir,
-                'conf': {
-                    'path': '~/.imapfw/Mail/MaildirA',
-                    'max_connections': 2,
-                },
+                **{ 'conf': { 'path': '~/.imapfw/Mail/MaildirA', 'max_connections': 2 } }
             },
-            'right': ImapRepositoryExample,
+            'right': "ImapRepositoryExample",
         },
     ],
 }
@@ -132,36 +123,18 @@ MainConf = {
 # from above can be removed and the configuration can be defined like this:
 #
 #MaildirExample = {
-#    'name': MaildirExample,
-#    'type': types.Maildir,
-#    'driver': drivers.Maildir,
-#    'conf': {
-#        'path': '~/Maildir/MaildirA',
-#        'max_connections': 2,
-#    },
+#    'name': MaildirExample, 'type': types.Maildir, 'driver': drivers.Maildir,
+#    'conf': { 'path': '~/Maildir/MaildirA', 'max_connections': 2 },
 #}
 #
 #AccountExample = {
 #    'type': types.Account,
-#    'conf': {
-#        'path': '~/Maildir/MaildirA',
-#        'max_connections': 2,
-#     },
-#    'left': MaildirExample,
-#    'right': ImapRepositoryExample,
+#    'conf': { 'path': '~/Maildir/MaildirA', 'max_connections': 2 },
+#    'left': MaildirExample, 'right': ImapRepositoryExample,
 #}
 
-#
-# For even better clarity, types can be written as python objects. For example,
-# the MaildirExample can be rewritten like this:
-#
-#MaildirExample(types.Maildir):
-#    driver = drivers.Maildir,
-#    conf = {
-#        'path': '~/Maildir/MaildirA',
-#        'max_connections': 2,
-#    }
 
-
-
-# vim: syntax=python ts=4 expandtab :
+# For even better clarity, types can be written as python objects, like, the MaildirExample can be rewritten like this:
+# MaildirExample(types.Maildir):
+#     driver = drivers.Maildir,
+#     conf = { 'path': '~/Maildir/MaildirA', 'max_connections': 2 }

@@ -3,7 +3,6 @@
 
 
 from imapfw import runtime
-from imapfw.interface import implements, checkInterfaces
 from imapfw.conf import Parser
 
 from .interface import ActionInterface
@@ -12,9 +11,7 @@ from .interface import ActionInterface
 from imapfw.annotation import ExceptionClass
 
 
-@checkInterfaces()
-@implements(ActionInterface)
-class TestRascal(object):
+class TestRascal(ActionInterface):
     """Test the rascal."""
 
     honorHooks = False

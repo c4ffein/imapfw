@@ -33,7 +33,7 @@ from .debug import debugArchitect
 # Annotations.
 from imapfw.annotation import Iterable
 from imapfw.edmp import Queue
-from imapfw.types.folder import Folders
+from imapfw.types import Folders
 
 
 @debugArchitect

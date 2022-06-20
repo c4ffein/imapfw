@@ -2,16 +2,13 @@
 # Copyright (c) 2015-2016, Nicolas Sebrecht & contributors.
 
 """
-
 Engines to work with folders/maiboxes.
-
 """
 
 from imapfw import runtime
 from imapfw.edmp import Channel
-from imapfw.types.account import loadAccount
 
-from .engine import SyncEngine, EngineInterface, SyncEngineInterface
+from .engine import SyncEngine
 
 # Interfaces.
 from imapfw.interface import implements, adapts, checkInterfaces
@@ -19,12 +16,9 @@ from imapfw.interface import implements, adapts, checkInterfaces
 # Annotations.
 from imapfw.edmp import Emitter
 from imapfw.concurrency import Queue
-from imapfw.types.folder import Folder
+from imapfw.types import Folder
 
 
-@checkInterfaces()
-@adapts(SyncEngine)
-@implements(EngineInterface)
 class SyncFolders(SyncEngine):
     """The engine to sync a folder in a worker."""
 
@@ -43,9 +37,10 @@ class SyncFolders(SyncEngine):
     def _syncFolder(self, folder: Folder) -> int:
         """Sync one folder."""
 
-        # account = loadAccount(self.accountName)
-        # leftRepository = account.fw_getLeft()
-        # rightRepository = account.fw_getRight()
+        # TODO : C4ffein
+        # account = runtime.rascal.getAccount(self.accountName)
+        # leftRepository = account.left
+        # rightRepository = account.right
 
         if self.left.isDriverBuilt_sync() is False:
             self.left.buildDriver(self.accountName, "left")
@@ -61,18 +56,12 @@ class SyncFolders(SyncEngine):
         return 0
 
     def run(self, taskQueue: Queue) -> None:
-        """Runner for the sync folder engine.
+        """Runner for the sync folder engine. Sequentially process the folders."""
 
-        Sequentially process the folders."""
-
-        #
-        # Loop over the available folder names.
-        #
-        for folder in Channel(taskQueue):
+        for folder in Channel(taskQueue):  # Loop over the available folder names.
             self.processing(folder)
 
-            # The engine will let explode errors it can't recover from.
-            try:
+            try:  # The engine will let explode errors it can't recover from.
                 exitCode = self._syncFolder(folder)
                 self.setExitCode(exitCode)
 

@@ -34,7 +34,7 @@ import unittest
 from imapfw import runtime
 from imapfw.constants import ARC
 
-from imapfw.types.account import loadAccount, Account
+from imapfw.types.account import getAccount, Account
 from imapfw.types.repository import Repository
 
 
@@ -49,20 +49,20 @@ class TestRascalAccount(unittest.TestCase):
     def setUp(self):
         print()
 
-    def test_00_loadAccount(self):
-        account = loadAccount(self.DEF_ACCOUNT)
+    def test_00_getAccount(self):
+        account = getAccount(self.DEF_ACCOUNT)
         runtime.ui.debugC(ARC, repr(account))
         self.assertIsInstance(account, Account)
         self.__class__.account = account
 
     def test_01_getRight(self):
-        repository = self.__class__.account.fw_getRight()
+        repository = self.__class__.account.right
         runtime.ui.debugC(ARC, repr(repository))
         self.assertIsInstance(repository, Repository)
         self.__class__.repositories.append(repository)
 
     def test_02_getLeft(self):
-        repository = self.__class__.account.fw_getLeft()
+        repository = self.__class__.account.left
         runtime.ui.debugC(ARC, repr(repository))
         self.assertIsInstance(repository, Repository)
         self.__class__.repositories.append(repository)
