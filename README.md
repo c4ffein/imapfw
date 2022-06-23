@@ -16,12 +16,12 @@ TODO - c4ffein : use special shield instead
 
 
 <table>
-  <tr>    <td> Original Author </td>    <td> Nicolas Sebrecht                 </td>    </tr>
-  <tr>    <td> Fork Author     </td>    <td> Nicolas Sebrecht                 </td>    </tr>
-  <tr>    <td> Source          </td>    <td> http://github.com/c4ffein/imapfw </td>    </tr>
-  <!--tr> <td> Website         </td>    <td> http://imapfw.c4ffein.org    </td>  </tr-->
-  <tr>    <td> License         </td>    <td> The MIT License (MIT)            </td>    </tr>
-  <tr>    <td> Status          </td>    <td> <i> Work In Progress </i>        </td>    </tr>
+  <tr>    <td> Original Author </td>    <td> Nicolas Sebrecht                     </td>    </tr>
+  <tr>    <td> Fork Author     </td>    <td> [c4ffein](http://github.com/c4ffein) </td>    </tr>
+  <tr>    <td> Source          </td>    <td> http://github.com/c4ffein/imapfw     </td>    </tr>
+  <!--tr> <td> Website         </td>    <td> http://imapfw.c4ffein.dev            </td>  </tr-->
+  <tr>    <td> License         </td>    <td> The MIT License (MIT)                </td>    </tr>
+  <tr>    <td> Status          </td>    <td> <i> Work In Progress </i>            </td>    </tr>
 </table>
 
 <!--
