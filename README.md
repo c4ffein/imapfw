@@ -104,16 +104,6 @@ Last WIP is in the [`next`branch](https://github.com/c4ffein/imapfw/tree/next).
 Also, you might like to read our [CONTRIBUTING page][contributing] and check the [TODO list](https://github.com/OfflineIMAP/imapfw/wiki) online.
 
 
-## Supporting
-
-Please, support the efforts! Staring the project at github is a good start.
-Reviews, feedbacks and pull requests are welcome, too. ,-)
-
-> Side note: I'm convinced that sooner is better when it's about reviews and
-> feedbacks. Once features you need will be implemented, it might be harder
-> to get things improved or take more time to get imapfw to fit your needs.
-
-
 ## Roadmap
 - Update imaplib2 : https://github.com/jazzband/imaplib2/blob/master/imaplib2/imaplib2.py, port timeout on socket modification, on both ssl and standard version as we modified `open_socket`
 - Secure paths
