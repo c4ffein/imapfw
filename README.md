@@ -4,7 +4,7 @@
 
 That fork comes as a replacement for the [original version by the OfflineIMAP team](https://github.com/OfflineIMAP/imapfw) that already aimed to replace the [OfflineIMAP syncer](https://github.com/OfflineIMAP/offlineimap).
 
-[See changes](#see-changes)
+[See changes](#changes-from-original-version)
 <!-- **Check out the [official website][website] to get last news *([RSS][feed])* about imapfw.** -->
 <!--Also, we have room at
 [![Gitter](https://badges.gitter.im/c4ffein/imapfw.svg)](https://gitter.im/c4ffein/imapfw?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
@@ -110,7 +110,7 @@ Also, you might like to read our [CONTRIBUTING page][contributing] and check the
 - Documentation in Markdown
 - Import [initial wiki](https://github.com/OfflineIMAP/imapfw/wiki) in the documentation
 
-## Changes
+## Changes from original version
 - We don't want to use Interface classes, this is Python not Java, [KISS](https://en.wikipedia.org/wiki/KISS_principle)
 - Can use TLS, or not, tries to use TLS by default
 - Quick-patched imaplib2 to allow timeout even for first connection
