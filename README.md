@@ -3,6 +3,7 @@
 **imapfw is a simple and powerful framework to work with mails.**
 
 That fork comes as a replacement for the [original version by the OfflineIMAP team](https://github.com/OfflineIMAP/imapfw) that already aimed to replace the [OfflineIMAP syncer](https://github.com/OfflineIMAP/offlineimap).
+
 [See changes](#see-changes)
 <!-- **Check out the [official website][website] to get last news *([RSS][feed])* about imapfw.** -->
 <!--Also, we have room at
