@@ -4,7 +4,7 @@
 
 That fork comes as a replacement for the [original version by the OfflineIMAP team](https://github.com/OfflineIMAP/imapfw) that already aimed to replace the [OfflineIMAP syncer](https://github.com/OfflineIMAP/offlineimap).
 
-[See changes](##changes-from-original-version)
+[See changes](#changes-from-original-version)
 <!-- **Check out the [official website][website] to get last news *([RSS][feed])* about imapfw.** -->
 <!--Also, we have room at
 [![Gitter](https://badges.gitter.im/c4ffein/imapfw.svg)](https://gitter.im/c4ffein/imapfw?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
