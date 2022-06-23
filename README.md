@@ -114,3 +114,4 @@ Also, you might like to read our [CONTRIBUTING page][contributing] and check the
 - We don't want to use Interface classes, this is Python not Java, [KISS](https://en.wikipedia.org/wiki/KISS_principle)
 - Can use TLS, or not, tries to use TLS by default
 - Quick-patched imaplib2 to allow timeout even for first connection
+- Tries to use instances and not on-the-fly built classes as much as possible
