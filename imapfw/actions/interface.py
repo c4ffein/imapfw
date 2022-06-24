@@ -1,14 +1,13 @@
 # The MIT License (MIT).
 # Copyright (c) 2015, Nicolas Sebrecht & contributors.
 
-from imapfw.interface import Interface
 from imapfw.conf import Parser
 
 # Annotations.
 from imapfw.annotation import ExceptionClass
 
 
-class ActionInterface(Interface):
+class ActionInterface:
 
     honorHooks = True
     requireRascal = True
