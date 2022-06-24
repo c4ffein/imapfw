@@ -372,7 +372,7 @@ class Receiver(object):
         else:
             self._previousTopicCount += 1
             if self._previousTopicCount == 2:
-                self._debug("reacting to '%s' again, further messages made" " silent" % (topic))
+                self._debug("reacting to '%s' again, further messages made silent" % (topic))
             if self._previousTopicCount > (_SILENT_TIMES - 1):
                 self._debug(
                     "reacting for the %ith time to '%s' with '%s', %s, %s"
@@ -417,7 +417,7 @@ class Receiver(object):
                             if realTopic in self._cache:
                                 result = self._cache[realTopic]
                             else:
-                                raise TopicError("%s: '%s' is called while" " no cached value." % (self._name, topic))
+                                raise TopicError(f"{self._name}: '{topic}' is called while no cached value.")
 
                         else:
                             realTopic = topic[:-5]  # "_sync"

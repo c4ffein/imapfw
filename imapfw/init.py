@@ -79,7 +79,7 @@ class Imapfw(object):
                     if timedout:
                         runtime.ui.error("exceptionHook reached timeout")
             except Exception as hookError:
-                outputException(hookError, "exception occured while running" " exceptionHook: %s" % str(hookError))
+                outputException(hookError, f"exception occured while running exceptionHook: {str(hookError)}")
 
             # Let the Action instance know the exception.
             try:
@@ -88,7 +88,7 @@ class Imapfw(object):
             except Exception as actionError:
                 outputException(
                     actionError,
-                    "exception occured while running" " internal 'action.exception()': %s" % str(actionError),
+                    f"exception occured while running internal 'action.exception()': {str(actionError)}",
                 )
             raise  # TODO: raise only unkown errors.
 

@@ -824,7 +824,7 @@ class Manager(ManagerInterface):
             for realName, emitterName, exposedName in self.__iterExposed():
                 if exposedName in ["serve", "serve_received"]:
                     raise Exception(
-                        "%s tried to expose '%s' which is forbidden" " name" % (self.__class__.__name__, exposedName)
+                        f"{self.__class__.__name__} tried to expose '{exposedName}' which is forbidden name"
                     )
                 # Only expose the methods dedicated to this emitter. We know
                 # this from the api part in the name of the method.
@@ -839,8 +839,7 @@ class Manager(ManagerInterface):
 
             self.ui.debugC(
                 EMT,
-                "new instance %s: %s"
-                % (emitter.__class__.__name__, [x for x in dir(emitter) if not x.startswith("_")]),
+                f"new instance {emitter.__class__.__name__}: {[x for x in dir(emitter) if not x.startswith(\"_\")]}"
             )
             return emitter  # The instance.
 

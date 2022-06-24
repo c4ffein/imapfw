@@ -77,7 +77,7 @@ class _CLIOptions(object):
         self.actions = self.parser.add_subparsers(
             title="Available actions",
             prog="action",
-            description="Each action might allow its own options. Run" " 'imapfw ACTION -h' to know more.",
+            description="Each action might allow its own options. Run 'imapfw ACTION -h' to know more.",
             metavar="ACTION",
             dest="action",
         )

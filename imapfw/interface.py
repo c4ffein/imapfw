@@ -104,7 +104,7 @@ def checkInterfaces(reverse: bool = True, signatures: bool = True, declare: bool
         try:
             cls.__implements__
         except AttributeError as e:
-            raise AttributeError("%s, did you wrote @checkInterfaces after" " @implements?" % e)
+            raise AttributeError(f"{e}, did you wrote @checkInterfaces after @implements?")
 
         # Get all declared interfaces and update __doc__ of methods.
         declaredByInterfaces = {}  # Dict[name, method]
