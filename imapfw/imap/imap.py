@@ -11,13 +11,11 @@ doesn't care at all.
 """
 
 from importlib import import_module
+from typing import List, Dict, Union
 
 from imapfw import runtime
 from imapfw.constants import IMAP
 from imapfw.types import Folders, Folder, Messages, Message
-
-# Annotations.
-from imapfw.annotation import List, Dict, Union
 
 # from .imapnim.imapnim import IMAPNim
 

@@ -22,9 +22,7 @@
 
 from collections import UserList
 from functools import total_ordering
-
-# Annotations.
-from imapfw.annotation import Union
+from typing import Union
 
 
 ENCODING = "UTF-8"

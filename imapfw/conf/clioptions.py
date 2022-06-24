@@ -7,7 +7,7 @@ Parse the command line options.
 
 """
 
-from __future__ import annotations  # TODO : Deleteme once Python 3.11, otherwise must type hint as 'ActionInterface'
+from __future__ import annotations  # TODO : Deleteme once Python 3.11, otherwise must type hint as string, see PEP 563
 from argparse import ArgumentParser
 from typing import Type, TYPE_CHECKING
 

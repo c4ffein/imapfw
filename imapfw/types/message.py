@@ -3,9 +3,7 @@
 
 from functools import total_ordering
 from collections import UserDict
-
-# Annotations.
-from imapfw.annotation import List
+from typing import List
 
 
 class MessageAttributes(object):
