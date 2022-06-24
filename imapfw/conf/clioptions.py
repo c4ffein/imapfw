@@ -7,13 +7,15 @@ Parse the command line options.
 
 """
 
+from __future__ import annotations  # TODO : Deleteme once Python 3.11, otherwise must type hint as 'ActionInterface'
 from argparse import ArgumentParser
+from typing import Type, TYPE_CHECKING
 
 from imapfw import __version__, __copyright__, __license__
 from imapfw.constants import DEBUG_CATEGORIES
 
-# Annotations.
-from imapfw.annotation import ActionClass
+if TYPE_CHECKING:
+    from imapfw.actions import ActionInterface
 
 
 class _CLIOptions(object):
@@ -28,7 +30,7 @@ class _CLIOptions(object):
         self.actions = None
         self.actionClasses = {}
 
-    def addAction(self, name: str, actionClass: ActionClass, help: str):
+    def addAction(self, name: str, actionClass: Type[ActionInterface], help: str):
         self.actionClasses[name] = actionClass
         return self.actions.add_parser(name, help=help)
 
