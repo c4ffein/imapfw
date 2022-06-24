@@ -23,8 +23,6 @@
 from collections import UserList
 from functools import total_ordering
 
-from imapfw.interface import implements, Interface, checkInterfaces
-
 # Annotations.
 from imapfw.annotation import Union
 

@@ -4,8 +4,6 @@
 from functools import total_ordering
 from collections import UserDict
 
-from imapfw.interface import implements, Interface, checkInterfaces
-
 # Annotations.
 from imapfw.annotation import List
 

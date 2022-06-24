@@ -71,7 +71,6 @@ class FetchAttributes(object):
         return "(%s)" % " ".join(self.attributes)
 
 
-# TODO: interface
 class SearchConditions(object):
     def __init__(self):
         self.maxSize = None  # in bytes (2097152 for 2MB)
