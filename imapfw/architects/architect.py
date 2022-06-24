@@ -14,6 +14,8 @@ Architects are not problem solving for the purpose of the actions/softwares.
 
 from imapfw import runtime
 
+from .debug import debugArchitect
+
 # Annotations.
 from imapfw.annotation import Function
 
