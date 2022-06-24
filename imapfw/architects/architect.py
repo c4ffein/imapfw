@@ -12,12 +12,11 @@ Architects are not problem solving for the purpose of the actions/softwares.
 
 """
 
+from typing import Callable
+
 from imapfw import runtime
 
 from .debug import debugArchitect
-
-# Annotations.
-from imapfw.annotation import Function
 
 
 @debugArchitect
@@ -32,7 +31,7 @@ class Architect(object):
         """Kill worker."""
         self.worker.kill()
 
-    def start(self, runner: Function, runnerArgs: tuple) -> None:
+    def start(self, runner: Callable, runnerArgs: tuple) -> None:
         """Start worker."""
         self.worker = runtime.concurrency.createWorker(self.workerName, runner, runnerArgs)
         self.worker.start()

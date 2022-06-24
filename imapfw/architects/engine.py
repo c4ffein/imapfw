@@ -7,6 +7,8 @@ Architect for basic engine.
 
 """
 
+from typing import Callable
+
 from .architect import Architect
 from .driver import DriversArchitect
 
@@ -14,7 +16,6 @@ from .debug import debugArchitect
 
 # Annotations.
 from imapfw.edmp import Emitter
-from imapfw.annotation import Function
 
 
 @debugArchitect
@@ -48,7 +49,7 @@ class EngineArchitect(object):
         self.drivers.kill()
         self.architect.kill()
 
-    def start(self, runner: Function, runnerArgs: tuple) -> None:
+    def start(self, runner: Callable, runnerArgs: tuple) -> None:
         """Start the workers."""
         self.drivers.start()
         self.architect.start(runner, runnerArgs)

@@ -3,11 +3,10 @@
 
 import logging
 import logging.config
+from typing import Callable, List
 
 from imapfw.constants import DEBUG_CATEGORIES, DEBUG_ALL_CATEGORIES
 
-# Annotations.
-from imapfw.annotation import List, Function
 
 logging_config = {
     "version": 1,
@@ -78,7 +77,7 @@ class TTY():
         if level <= self._infoLevel:
             self.info(*args)
 
-    def setCurrentWorkerNameFunction(self, func: Function) -> None:
+    def setCurrentWorkerNameFunction(self, func: Callable) -> None:
         self._currentWorkerName = func
 
     def setInfoLevel(self, level: int) -> None:

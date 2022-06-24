@@ -21,6 +21,8 @@ middle".
 ```
 """
 
+from typing import Iterable
+
 from imapfw import runtime
 from imapfw.engines import SyncAccounts
 from imapfw.runners import topRunner
@@ -31,7 +33,6 @@ from .folder import SyncFoldersArchitect
 from .debug import debugArchitect
 
 # Annotations.
-from imapfw.annotation import Iterable
 from imapfw.edmp import Queue
 from imapfw.types import Folders
 
