@@ -3,22 +3,18 @@
 
 """
 
-Engines are users of the the drivers. The logic to apply to the data is put in
-the engines, e.g. a 3-way merge engine. They are likely put in their own worker
-and should mostly send events to work "with the outside" (the other workers).
+Engines use the drivers. The logic to apply to the data is put in the engines, e.g. a 3-way merge engine.
+They are likely put in their own worker and should mostly send events to work "with the outside" (the other workers).
 
-Engines might be rather complex. Hence, they aren't meant at being exposed in
-the rascal and best practices must be applied to the code.
+Engines might be rather complex, they aren't meant at being exposed and best practices must be applied to the code.
 
-Engines follows the components design pattern because factoring engine code is
-not easy.
+Engines follows the components design pattern because factoring engine code is not easy.
 
-IOW, engines here are meant to be parent objects. Each is a pure data container
-and provide some default processing code for the behaviour. It is the component.
+IOW, engines here are meant to be parent objects.
+Each is a pure data container and provide some default processing code for the behaviour. It is the component.
 
-Good components modeling seperate each related data into one simple and
-dedicated component which is easy to re-use. Combine compenents into object
-(called entities) to use them in the application.
+Good components modeling seperate each related data into one simple and dedicated component which is easy to re-use.
+Combine compenents into object (called entities) to use them in the application.
 
 """
 
@@ -57,7 +53,7 @@ class SyncEngine(object):
 
     def processing(self, task: str) -> None:
         """Log what is processed by the engine."""
-        runtime.ui.infoL(2, "%s processing: %s" % (self.workerName, task))
+        runtime.ui.infoL(2, f"{self.workerName} processing: {task}")
         self._gotTask = True
 
     def setExitCode(self, exitCode: int) -> None:
