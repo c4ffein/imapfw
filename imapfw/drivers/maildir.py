@@ -80,11 +80,7 @@ class Maildir(Driver):
         maildirPath = self.conf.get("path")
         sep = self.conf.get("sep")
 
-        # Set the fullPath.
-        if relativePath is None:
-            fullPath = maildirPath
-        else:
-            fullPath = os.path.join(maildirPath, relativePath)
+        fullPath = maildirPath if relativePath is None else os.path.join(maildirPath, relativePath)  # Set the fullPath
 
         if isFolder(fullPath):
             # TODO: get encoding from conf.
@@ -98,11 +94,9 @@ class Maildir(Driver):
 
             if sep == "/":  # Recurse if nested folders are allowed.
                 scanChildren(fullPath, relativePath)
-        else:
-            # The maildirPath as given by the user might not be a real maildir
-            # but a base path of maildirs. Scan this path.
-            if relativePath is None:
-                scanChildren(fullPath, relativePath)
+        elif relativePath is None:
+            # The maildirPath as given by the user might not be a real maildir but a base path of maildirs, so scan
+            scanChildren(fullPath, relativePath)
 
     def connect(self):
         path = expandPath(self.conf.get("path"))

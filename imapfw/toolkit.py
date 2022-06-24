@@ -38,8 +38,7 @@ def xTrans(thing, transforms):
 
     :args:
      - thing: string; if None, then no processing will take place.
-     - transforms: iterable that returns transformation function
-       on each turn.
+     - transforms: iterable that returns transformation function on each turn.
 
     Returns transformed thing."""
 
