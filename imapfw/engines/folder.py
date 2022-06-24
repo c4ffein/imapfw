@@ -10,9 +10,6 @@ from imapfw.edmp import Channel
 
 from .engine import SyncEngine
 
-# Interfaces.
-from imapfw.interface import implements, adapts, checkInterfaces
-
 # Annotations.
 from imapfw.edmp import Emitter
 from imapfw.concurrency import Queue

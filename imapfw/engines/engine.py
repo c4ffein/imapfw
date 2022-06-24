@@ -27,9 +27,6 @@ from imapfw import runtime
 # TODO: engines debug logs.
 from imapfw.constants import WRK
 
-# Interfaces.
-from imapfw.interface import Interface, implements, checkInterfaces
-
 # Annotations.
 from imapfw.edmp import Emitter
 from imapfw.concurrency import Queue
