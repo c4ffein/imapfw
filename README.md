@@ -108,6 +108,7 @@ PR and Issues are open.
 - Secure paths
 - Documentation in Markdown
 - Import [initial wiki](https://github.com/OfflineIMAP/imapfw/wiki) in the documentation
+- Black / Flake8
 
 ### Changes from original version
 - We don't want to use Interface classes, this is Python not Java, [KISS](https://en.wikipedia.org/wiki/KISS_principle)
