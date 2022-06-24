@@ -1,14 +1,12 @@
 # The MIT License (MIT).
 # Copyright (c) 2015, Nicolas Sebrecht & contributors.
 
+from typing import Type
 
 from imapfw import runtime
 from imapfw.conf import Parser
 
 from .interface import ActionInterface
-
-# Annotations.
-from imapfw.annotation import ExceptionClass
 
 
 class TestRascal(ActionInterface):
@@ -25,7 +23,7 @@ class TestRascal(ActionInterface):
         if exitCode > self._exitCode:
             self._exitCode = exitCode
 
-    def exception(self, e: ExceptionClass) -> None:
+    def exception(self, e: Type[Exception]) -> None:
         # This should not happen since all exceptions are handled at lower level.
         raise NotImplementedError
 

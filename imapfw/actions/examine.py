@@ -1,6 +1,8 @@
 # The MIT License (MIT).
 # Copyright (c) 2015, Nicolas Sebrecht & contributors.
 
+from typing import Type, Dict
+
 from imapfw import runtime
 from imapfw.types.account import Account
 from imapfw.controllers.examine import ExamineController
@@ -8,9 +10,6 @@ from imapfw.drivers.driver import Driver
 from imapfw.conf import Parser
 
 from .interface import ActionInterface
-
-# Annotations.
-from imapfw.annotation import ExceptionClass, Dict
 
 
 class Examine(ActionInterface):
@@ -25,7 +24,7 @@ class Examine(ActionInterface):
 
         self._architects = []
 
-    def exception(self, e: ExceptionClass) -> None:
+    def exception(self, e: Type[Exception]) -> None:
         self._exitCode = 3
 
     def getExitCode(self) -> int:

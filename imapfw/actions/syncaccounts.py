@@ -1,14 +1,13 @@
 # The MIT License (MIT).
 # Copyright (c) 2015, Nicolas Sebrecht & contributors.
 
+from typing import Type
+
 from imapfw import runtime
 from imapfw.conf import Parser
 from imapfw.architects.account import SyncAccountsArchitect
 
 from .interface import ActionInterface
-
-# Annotations.
-from imapfw.annotation import ExceptionClass
 
 
 class SyncAccounts(ActionInterface):
@@ -22,7 +21,7 @@ class SyncAccounts(ActionInterface):
         self.engineName = None
         self.exitCode = -1
 
-    def exception(self, e: ExceptionClass) -> None:
+    def exception(self, e: Type[Exception]) -> None:
         self.exitCode = 3
         raise NotImplementedError  # TODO
 

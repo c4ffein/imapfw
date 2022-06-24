@@ -1,13 +1,12 @@
 # The MIT License (MIT).
 # Copyright (c) 2015, Nicolas Sebrecht & contributors.
 
+from typing import Type
+
 from imapfw import runtime
 from imapfw.conf import Parser
 
 from .interface import ActionInterface
-
-# Annotations.
-from imapfw.annotation import ExceptionClass
 
 
 class Devel(ActionInterface):
@@ -19,7 +18,7 @@ class Devel(ActionInterface):
     def __init__(self):
         self._exitCode = 0
 
-    def exception(self, e: ExceptionClass) -> None:
+    def exception(self, e: Type[Exception]) -> None:
         self._exitCode = 3
 
     def getExitCode(self) -> int:

@@ -207,13 +207,11 @@ There are good demos at the end of the module. ,-)
 """
 
 import time
-from typing import TypeVar
+from typing import TypeVar, Type
 
 from imapfw import runtime
 from imapfw.constants import EMT, SLEEP
 
-# Annotations.
-from imapfw.annotation import ExceptionClass
 from imapfw.concurrency import Queue
 
 
@@ -226,7 +224,7 @@ class TopicError(Exception):
 
 
 # Outlined.
-def _raiseError(cls_Exception: ExceptionClass, reason: str):
+def _raiseError(cls_Exception: Type[Exception], reason: str):
     """Default callback for errors."""
 
     try:

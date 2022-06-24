@@ -1,12 +1,11 @@
 # The MIT License (MIT).
 # Copyright (c) 2015, Nicolas Sebrecht & contributors.
 
+from typing import Type
+
 from imapfw.conf import Parser
 
 from .interface import ActionInterface
-
-# Annotations.
-from imapfw.annotation import ExceptionClass
 
 
 class Noop(ActionInterface):
@@ -15,7 +14,7 @@ class Noop(ActionInterface):
     honorHooks = False
     requireRascal = False
 
-    def exception(self, e: ExceptionClass) -> None:
+    def exception(self, e: Type[Exception]) -> None:
         raise NotImplementedError
 
     def getExitCode(self) -> int:
