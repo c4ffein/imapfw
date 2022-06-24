@@ -1,13 +1,11 @@
 # The MIT License (MIT).
 # Copyright (c) 2015, Nicolas Sebrecht & contributors.
 
-from imapfw.interface import Interface
-
 from imapfw.annotation import DriverClass  # Annotations.
 
 
 
-class Driver(Interface):
+class Driver():
     """The Driver base class.
 
     This is the middleware for the drivers:
