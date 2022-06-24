@@ -19,7 +19,7 @@ from imapfw.types import Folders, Folder, Messages, Message
 # Annotations.
 from imapfw.annotation import List, Dict, Union
 
-# from .imapc.interface import IMAPcInterface
+# from .imapnim.imapnim import IMAPNim
 
 
 # TODO: use UTF-7.
@@ -102,11 +102,6 @@ class SearchConditions(object):
         return "UID 1:*"
 
 
-# TODO: move to imapc/interface.py
-class IMAPcInterface(object):
-    pass  # TODO
-
-
 class IMAPlib2_skater(object):
     """Allows to use imaplib2 with the API of IMAPc."""
 
@@ -119,10 +114,10 @@ class IMAPlib2_skater(object):
     def _debugResponse(self, command: str, response: str) -> None:
         runtime.ui.debugC(IMAP, "[%s] response: %s" % (command, response))
 
-    def connect(self, host: str, port: str) -> None:
+    def connect(self, host: str, port: str, use_tls: bool) -> None:
         from .imaplib3 import imaplib2
 
-        self.imap = imaplib2.IMAP4(host, port, debug=3, timeout=2)
+        self.imap = (imaplib2.IMAP4_SSL if use_tls else imaplib2.IMAP4)(host, port, debug=3, timeout=2)
 
     def getCapability(self) -> List[str]:
         # (typ, [data])
@@ -261,13 +256,11 @@ def Imap(backendNameVersion):
         version = lst_nameVersion.pop(0)
 
     # imapc
-    if backendName == "imapc":
-        from .imapc.imapc import IMAP4rev1
-
-        return IMAP4rev1()
+    if backendName == "imapnim":
+        return IMAPNim()
 
     # imaplib2 (pure-python3)
     if backendName == "imaplib3":
         return IMAPlib2_skater()
 
-    raise Exception("unkown backend: %s" % backendName)
+    raise Exception(f"unkown backend: {backendName}")

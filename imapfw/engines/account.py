@@ -19,10 +19,10 @@ from imapfw.concurrency import Queue
 from imapfw.types.account import Account
 
 
-def con_and_sync(engine, emitter, emitter_name, account_name):
-    engine.buildDriver(account_name, emitter_name)
+def con_and_sync(emitter, emitter_name, account_name):
+    emitter.buildDriver(account_name, emitter_name)
     emitter.connect()  # Connect the drivers.
-    emitter.left.getFolders()
+    emitter.getFolders()
     return emitter.getFolders_sync()
 
 
@@ -45,8 +45,8 @@ class SyncAccounts(SyncEngine):
         l_repo, r_repo = account.left, account.right  # Get the repo instances
 
         # Get the folders from both sides so we can feed the folder tasks.
-        leftFolders = con_and_sync(self, self.left, "left", account.name)
-        rightFolders = con_and_sync(self, self.rght, "right", account.name)
+        leftFolders = con_and_sync(self.left, "left", account.name)
+        rightFolders = con_and_sync(self.rght, "right", account.name)
 
         # Merge the folder lists.
         mergedFolders = Folders()
@@ -92,19 +92,19 @@ class SyncAccounts(SyncEngine):
         """Sequentially process the accounts."""
 
         # Loop over the available account names.
-        for account.name in Channel(taskQueue):
+        for accountName in Channel(taskQueue):
             # The syncer let explode errors it can't recover from.
             try:
-                self.processing(account.name)
+                self.processing(accountName)
                 # Get the account instance from the rascal.
-                account = runtime.rascal.getAccount(account.name)
+                account = runtime.rascal.getAccount(accountName)
                 self._syncAccount(account)  # Wait until folders are done.
                 self.setExitCode(0)
                 # TODO: Here, we only keep max exit code. Would worth using the
                 # rascal at the end of the process for each account.
 
             except Exception as e:
-                runtime.ui.error(f"could not sync account {account.name}")
+                runtime.ui.error(f"could not sync account {accountName}")
                 runtime.ui.exception(e)
                 # TODO: honor rascal!
                 self.setExitCode(10)  # See manual.

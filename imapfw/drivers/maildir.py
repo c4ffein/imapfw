@@ -111,9 +111,9 @@ class Maildir(Driver):
         except FileExistsError:
             pass
         except FileNotFoundError:
-            raise DriverFatalError("parent directory of '%s' does not exists" % path)
+            raise DriverFatalError(f"parent directory of '{path}' does not exists")
         if not os.path.isdir(path):
-            raise DriverFatalError("path is not a directory: %s" % path)
+            raise DriverFatalError(f"path is not a directory: {path}")
         self.conf["path"] = path  # Record expanted path.
         return True
 

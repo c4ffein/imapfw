@@ -22,7 +22,8 @@ class Imap(Driver):
     def connect(self):
         host = self.conf.get("host")
         port = int(self.conf.get("port"))
-        return self.imap.connect(host, port)
+        use_tls = bool(self.conf.get("use_tls", True))
+        return self.imap.connect(host, port, use_tls)
 
     def getCapability(self):
         return self.imap.getCapability()

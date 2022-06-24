@@ -33,6 +33,7 @@ class Rascal(object):
         # TODO : C4FFEIN : We need those 2 struct to put classes in here and not duplicate code.
         self.accounts = {}
         self.repositories = {}
+        self.folders = {}
         # Cached literals.
         self._mainConf = None
 
@@ -48,27 +49,13 @@ class Rascal(object):
         except:
             return lambda hook, *args: hook.ended()
 
-    #def _getRas(self, name: str, expectedTypes: List[Class]) -> type:
-    #    try:
-    #        return self._nrascal[name]
-    #    except KeyError:
-    #        pass
-    #    cls = getattr(self._rascal, name)
-    #    if isinstance(cls, dict):
-    #        self._nrascal[name] = type(name, (expectedTypes[0],), cls)
-    #        return self._nrascal[name]
-    #    return cls
-
     def _getLiteral(self, name: str) -> type:
-        print("\n\nNOFAKE", self._nrascal, name)
-        print("ENOFAKE", self._nrascal.get(name))
         return self._nrascal.get(name, None) or getattr(self._rascal, name)
 
     def get(self, name: str, expectedTypes: List[Class]):
         cls = self._getLiteral(name)
 
         for expectedType in expectedTypes:
-            print("HIHI", cls)
             if issubclass(cls, expectedType):
                 return cls
 
@@ -141,7 +128,6 @@ class Rascal(object):
             exec(compile(rascal_file.read(), path, "exec"), rascal_mod.__dict__)
         self._rascal = rascal_mod
 
-        print("\n\nKEK\n\n", self._rascal)
         for section_name, cls in (("DriveDrivers", shells.DriveDriver), ("Maildirs", types.Maildir), ("Imaps", types.Imap)):
             try:
                 section = getattr(self._rascal, section_name)
@@ -149,11 +135,7 @@ class Rascal(object):
                 print(e)
                 continue
             for new_cls_name, new_dict in section.items():
-                #self._nrascal[new_cls_name] = type(new_cls_name, (cls,), new_dict)
-                self._nrascal[new_cls_name] = type(new_cls_name, (cls, *cls.__bases__), new_dict)
-                print(cls.__bases__, self._nrascal[new_cls_name].__bases__)
-                print(issubclass(self._nrascal[new_cls_name], cls))
-                print ("1 - rascaled", new_cls_name, (cls,), new_dict, " as ", self._nrascal[new_cls_name], " in ", new_cls_name)
+                self.load_object_dict({"type": cls, "name": new_cls_name} | new_dict)
         for section_name, cls in (("Home", types.Account), ("Foundation", types.Account)):
             try:
                 section = getattr(self._rascal, section_name)
@@ -161,22 +143,13 @@ class Rascal(object):
                 print(e)
                 continue
             fixin(self._nrascal, new_dict)
-            #self._nrascal[section_name] = type(section_name, (cls,), new_dict)
             self._nrascal[section_name] = type(section_name, (cls, *cls.__bases__), new_dict)
-            print(issubclass(self._nrascal[section_name], cls))
-            print ("2 - rascaled", section_name, (cls,), new_dict, " as ", self._nrascal[section_name], " in ", section_name)
-        print(self._nrascal)
 
         self._mainConf = self.getSettings("MainConf")
 
         # Turn accounts definitions from MainConf into global of rascal literals.
         if "accounts" in self._mainConf:
             for accountDict in self._mainConf.get("accounts"):
-                #setattr(self._rascal, accountDict.get("name"), accountDict)
-                #print("TRYFIX", accountDict)
-                #fixin(self._nrascal, accountDict)
-                #self._nrascal[accountDict.get("name")] = type(accountDict.get("name"), (types.Account,), accountDict)
-                #self._accounts[]
                 self.accounts[accountDict.get("name")] = self.load_object_dict(accountDict)
 
         # First pass ended. We now want all refs to be pointers, not strings or pointers.
@@ -187,10 +160,17 @@ class Rascal(object):
         t = d.get("type")
         if issubclass(t, types.Repository):
             o = t(*map(lambda s: d.get(s), ["name", "driver", "conf"]))  # TODO : optional controllers ?
+            self.repositories[o.name] = o
         elif issubclass(t, types.Folder):
             o = t(*map(lambda s: d.get(s), ["name"]))  # TODO : optional encoding
+            self.folders[o.name] = o
         elif issubclass(t, types.Account):
+            if isinstance(d["left"], dict):
+                d["left"] = self.load_object_dict(d["left"])
+            if isinstance(d["right"], dict):
+                d["right"] = self.load_object_dict(d["right"])
             o = t(*map(lambda s: d.get(s), ["name", "left", "right", "conf"]))  # TODO : optional controllers ?
+            self.accounts[o.name] = o
         else:
             raise Exception(f"Unhandled type {t} in config")
         return o

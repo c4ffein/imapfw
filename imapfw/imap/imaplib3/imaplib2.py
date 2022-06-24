@@ -431,7 +431,7 @@ class IMAP4(object):
         """open_socket()
         Open socket choosing first address family available."""
 
-        return socket.create_connection((self.host, self.port))
+        return socket.create_connection((self.host, self.port), self.resp_timeout)  # Modification by c4ffein
 
     def ssl_wrap_socket(self):
 

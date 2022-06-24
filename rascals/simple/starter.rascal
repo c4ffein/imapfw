@@ -74,11 +74,12 @@ def exceptionHook(hook, error):
 
 ImapConfExample = {
     'backend':  'imaplib3', # Optional.
-    'host':      'imap.gmail.com',
-    'port':     '143',
+    'host':     'imap.gmail.com',
+    'port':     '993',
     'username': 'myname',
     'password': 'password',
     'max_connections': 2,
+    'use_tls': True,
 }
 
 Imaps = {
@@ -111,7 +112,7 @@ MainConf = {
 
                 # repository attributes.
                 'driver': drivers.Maildir,
-                **{ 'conf': { 'path': '~/.imapfw/Mail/MaildirA', 'max_connections': 2 } }
+                **{ 'conf': { 'path': '~/.local/share/imapfw/Mail/MaildirA', 'max_connections': 2 } }
             },
             'right': "ImapRepositoryExample",
         },
