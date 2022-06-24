@@ -658,24 +658,7 @@ class _Receiver(object):
         return self._shouldContinueServing()
 
 
-class ManagerInterface(object):
-    def disable(self):
-        raise NotImplementedError
-
-    def enable(self):
-        raise NotImplementedError
-
-    def stopServing(self):
-        raise NotImplementedError
-
-    def getEmitter(self):
-        raise NotImplementedError
-
-    def getReceiver(self):
-        raise NotImplementedError
-
-
-class Manager(ManagerInterface):
+class Manager():
     """The manager base class."""
 
     def __init__(self):
