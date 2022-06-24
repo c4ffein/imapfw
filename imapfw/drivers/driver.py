@@ -1,8 +1,7 @@
 # The MIT License (MIT).
 # Copyright (c) 2015, Nicolas Sebrecht & contributors.
 
-from imapfw.annotation import DriverClass  # Annotations.
-
+from typing import Type
 
 
 class Driver():
@@ -38,7 +37,7 @@ class Driver():
         return self.local
 
 
-def loadDriver(cls_driver: DriverClass, repositoryName: str, repositoryConf: dict) -> Driver:
+def loadDriver(cls_driver: Type[Driver], repositoryName: str, repositoryConf: dict) -> Driver:
 
     if not issubclass(cls_driver, Driver):  # Build the final end-driver.
         raise TypeError(f"driver {cls_driver.__name__} of {repositoryName} does not satisfy Driver")
