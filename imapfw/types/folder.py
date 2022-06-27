@@ -34,7 +34,7 @@ class Folder(object):
 
     Used by any driver, controller or engine. Might be passed to the user via the rascal.
     Internal name is the folder name with the levels of hierarchy, type bytes.
-    Each driver must use the same representation so we can compare folderd from multiple drivers.
+    Each driver must use the same representation so we can compare folders from multiple drivers.
     """
     def __init__(self, name, encoding=None):
         self.setName(name, encoding)  # Must be bytes.

@@ -35,8 +35,7 @@ class SyncAccounts(ActionInterface):
     def run(self) -> None:
         """Enable the syncing of the accounts in an async fashion.
 
-        Code here is about setting up the environment, start the jobs and
-        monitor."""
+        Code here is about setting up the environment, start the jobs and monitor."""
 
         maxConcurrentAccounts = min(runtime.rascal.getMaxSyncAccounts(), len(self.accountList))
 

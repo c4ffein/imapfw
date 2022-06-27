@@ -3,21 +3,16 @@
 
 """
 
-Working with accounts implies end-to-end connections.  Each end is a driver to
-work with the data. The engine holds the business logic and is "put in the
-middle".
+Working with accounts implies end-to-end connections. Each end is a driver to work with the data.
+The engine holds the business logic and is "put in the middle".
 
 # SCHEMATIC OVERVIEW
 
 ```
-
-  {worker}                        {worker}                         {worker}
-+----------+                    +----------+                     +----------+
-|          |      (drives)      |          |      (drives)       |          |
-|  driver  |<-------------------|  engine  +-------------------->|  driver  |
-|          |                    |          |                     |          |
-+----------+                    +----------+                     +----------+
-
+      {worker}                        {worker}                         {worker}
+    +----------+      (drives)      +----------+      (drives)       +----------+
+    |  driver  |<-------------------|  engine  +-------------------->|  driver  |
+    +----------+                    +----------+                     +----------+
 ```
 """
 
@@ -58,8 +53,7 @@ class SyncArchitect(object):
     def _on_accountEngineDone(self, exitCode: int) -> None:
         """React to `done` event for the account engine.
 
-        This event is triggered when the sync engine has no more task to
-        process. Stop worker and set exit code."""
+        This event is triggered when the sync engine has no more task to process. Stop worker and set exit code."""
 
         # Set exit code.
         self._setExitCode(exitCode)
@@ -153,28 +147,24 @@ class SyncAccountsArchitect(object):
         self.accountTasks = None
 
     def start(self, maxConcurrentAccounts: int) -> None:
-        """Starts the concurrents architects (workers).
-
-        They are all created now."""
+        """Starts the concurrents architects (workers). They are all created now."""
 
         # The account names are the tasks for the account workers.
         accountTasks = runtime.concurrency.createQueue()
         for name in self.accountList:
             accountTasks.put(name)
 
-        # Avoid race condition: an empty queue would let account workers to quit
-        # without processing the content. We have to make sure the queue is not
-        # empty before using them. accountList can't be empty as defined by the
-        # argument parser.
+        # Avoid race condition: an empty queue would let account workers to quit without processing the content.
+        # We have to make sure the queue is not  empty before using them.
+        # accountList can't be empty as defined by the argument parser.
         while accountTasks.empty():
             pass
-        # Oops! This is still racy! This assumes that the NEXT task is available
-        # once the previous run is done. This should be reasonable assumption,
-        # though...
+        # Oops! This is still racy! This assumes that the NEXT task is available once the previous run is done.
+        # This should be reasonable assumption, though...
 
         # Setup the architecture.
         for i in range(maxConcurrentAccounts):
-            workerName = "Account.%i" % i
+            workerName = f"Account.{i}"
 
             syncArch = SyncArchitect(workerName, accountTasks, "SyncAccountEngine", "SyncFolderEngine")
             syncArch.init()
