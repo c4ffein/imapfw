@@ -25,9 +25,8 @@
 Overview
 ========
 
-Managers are handy objects to communicate between workers, implementing the
-"passing by message" design. Your managers must derivate from the `Manager`
-class.
+Managers are handy objects to communicate between workers, implementing the "passing by message" design.
+Your managers must derivate from the `Manager` class.
 
 In order to interact with other workers, each manager aims to provide:
     - one `_Receiver` instance;
@@ -41,61 +40,53 @@ The emitter(s) controls the receiver with simple method calls.
 
 The code implementing the "doSomething_async" method is run by the receiver.
 
-**The receiver and emitters only support one kind of communication:
-ASYNCHRONOUS. By using this module you are forced to write event-driven code,
-called requests (most preferably with callbacks)!**
+**The receiver and emitters only support one kind of communication: ASYNCHRONOUS.
+By using this module you are forced to write event-driven code, called requests (most preferably with callbacks)!**
 
 
 The manager
 ===========
 
 All the code implemented in the manager is executed by the receiver.
-
-What methods of the manager get exposed through the emitter relies on name
-conventions.
+What methods of the manager get exposed through the emitter relies on name conventions.
 
 
 Name conventions
 ----------------
 
-Because the manager will build the receiver and emitters from itself, the
-methods of a manager can intend different purposes:
+Because the manager will build the receiver and emitters from itself,
+the methods of a manager can intend different purposes:
     - factorized code for the manager;
     - factorized code for the derivated classes;
     - code for the user of the manager instance;
     - code for the user of the receiver instance;
     - code to expose through emitters.
 
-Name conventions helps to know what the method is for. Also, building the
-receiver and emitters relies on those convention names.
+Name conventions helps to know what the method is for.
+Also, building the receiver and emitters relies on those convention names.
 
 :_mgr_*: namespace reserved for the `Manager` base class.
 :_ex: namespace for methods to expose via the emitters.
 
-The canonical form for exposed methods is:
-    ex_<emitterName>_<methodName>
-
+The canonical form for exposed methods is: ex_<emitterName>_<methodName>
 The 'ex_' prefix is mandatory.
 
-The <emitterName> is the emitter name which this methods targets. This might
-indifferently call it <apiName> since it defines the API of the emitter.
+The <emitterName> is the emitter name which this methods targets.
+This might indifferently call it <apiName> since it defines the API of the emitter.
 
-When exposing a method, the prefixes "ex_" and <emitterName> are stripped from
-the name:
+When exposing a method, the prefixes "ex_" and <emitterName> are stripped from the name:
 
 :Example:
 
 >>> class MyManager(Manager):
 >>>     def ex_thisEmitter_printInfo(self, info):
 >>>         print(info)
->>> 
 >>> manager = MyManager()
 >>> handler = manager.getReceiver()
 >>> emitter = manager.getEmitter('thisEmitter')
 >>> emitter.printInfo('It works!')
 >>> handler.serve_received()
 It works!
->>> 
 
 In this extract, the emitter 'thisEmitter' is sending the request 'printInfo'.
 
@@ -105,15 +96,13 @@ Helpers
 
 The `Manager` class has some facilities for your own managers.
 
-:`stopServing`: allows to gracefully stop the receiver once called with `serve`.
-This aims at being exposed.
+:`stopServing`: allows to gracefully stop the receiver once called with `serve`. This aims at being exposed.
 
 :Example:
 
 >>> class MyManager(Manager):
 >>>     def ex_oneEmitter_stopServing(self):
 >>>         self.stopServing()
->>> 
 >>> oneEmitter.stopServing()
 
 :`disable`: don't run the triggers for this emitter until `enable` is called.
@@ -121,10 +110,8 @@ This aims at being exposed.
 >>> class MyManager(Manager):
 >>>     def ex_oneEmitter_disable(self, emitterName):
 >>>         self.disable(emitterName)
->>> 
 >>>     def ex_anotherEmitter_parintInfo(self, emitterName):
 >>>         print('info')
->>> 
 >>> anotherEmitter.printInfo()
 info
 >>> oneEmitter.disable()
@@ -141,26 +128,24 @@ The emitter
 Requests
 --------
 
-The easiest way to send a request is to not worry about what is done. Simply
-call any exposed method of the emitter.
+The easiest way to send a request is to not worry about what is done.
+Simply call any exposed method of the emitter.
 
 
 Requests with callbacks
 -----------------------
 
-Writing asynchronized code usually requires callbacks. The callbacks must be
-callable. They are defined on the emitter. They will be called once the request
-was proceed and the response for this event was given back as a result.
+Writing asynchronized code usually requires callbacks.
+The callbacks must be callable. They are defined on the emitter.
+They will be called once the request was proceed and the response for this event was given back as a result.
 
 There are 3 kinds of callbacks:
 
-:onSuccess: executed when the receiver did not catch an exception while
-    executing the request. The first argument of the callback is the result of the
-    process.
+:onSuccess: executed when the receiver did not catch an exception while executing the request.
+    The first argument of the callback is the result of the process.
 
-:onError: executed when the receiver has catched an exception while executing
-    the request. The first argument is the class of the exception, the second
-    argument is the reason.
+:onError: executed when the receiver has catched an exception while executing the request.
+    The first argument is the class of the exception, the second argument is the reason.
 
 :onComplete: always executed. No argument is passed.
 
@@ -170,13 +155,11 @@ Callbacks are attached to a request like this:
 
 >>> def myCallback(result):
 >>>     print("result of longRequest: %s"% result)
->>> 
 >>> emitter.longRequest.addOnSuccess(myCallback)
 >>> emitter.longRequest() # no wait
 >>> # other statements
 >>> emitter.honor() # block here.
 result of longRequest: whatever
->>> 
 
 At first, we assign myCallback to longRequest. Then, the emitter send the
 request longRequest. At the end, honor will block until the longRequest send
@@ -188,14 +171,12 @@ There can be more than one callback of the same type for a request.
 
 >>> def myCallback(result):
 >>>     print("result of longRequest: %s"% result)
->>> 
 >>> emitter.longRequest.addOnSuccess(myCallback)
 >>> emitter.longRequest.addOnSuccess(myCallback)
 >>> emitter.longRequest() # no wait
 >>> emitter.honor() # block here.
 result of longRequest: whatever
 result of longRequest: whatever
->>> 
 
 Positional and named arguments are supported for the callbacks.
 
@@ -203,20 +184,19 @@ Positional and named arguments are supported for the callbacks.
 The receiver
 ============
 
-The receiver executes the requests. It is added the method `serve_received` and
-`serve` so it can serve emitters. The `serve_received` method returns True or
-False whether it should continue serving or not.
+The receiver executes the requests. It is added the method `serve_received` and `serve` so it can serve emitters.
+The `serve_received` method returns True or False whether it should continue serving or not.
 
 :Example:
 
 >>> while receiver.serve_received():
 >>>     pass
 
-The serve_received() blocks until all the requests events are handled. The
-`serve` method is implemented exactly like that.
+The serve_received() blocks until all the requests events are handled.
+The `serve` method is implemented exactly like that.
 
-Each request ends before the next is started in the order they are called by the
-emitter (they are internally put in a queue). The processing is sequential.
+Each request ends before the next is started in the order they are called by the emitter
+(they are internally put in a queue). The processing is sequential.
 So, it's fine to implement methods like this in the manager:
 
 :Example:
@@ -225,38 +205,31 @@ So, it's fine to implement methods like this in the manager:
 >>>     def __init__(self):
 >>>         super(MyManager, self).__init__()
 >>>         self.result = None
->>> 
 >>>     def ex_oneEmitter_longRequest(self):
 >>>         # Code taking a very long time; self.result gets True or
 >>>         # False.
 >>>         if condition:
 >>>             self.result = False
 >>>         self.result = True
->>> 
 >>>     def ex_oneEmitter_getLongRequestResult(self):
 >>>         if self.result is True: # Real value set by longRequest().
 >>>             # doSomething()
 
-The emitter will get the correct result as long as it calls
-longRequest() before getLongRequestResult().
+The emitter will get the correct result as long as it calls longRequest() before getLongRequestResult().
 
-The emitter does not have to worry about the order of execution since it's
-guaranted they are executed in the same order of the calls.
+The emitter does not have to worry about the order of execution since it's guaranted they are executed in the same order of the calls.
 
-**However, if there are more than one emitter, the order of execution for the
-methods is undefined accross the emitters.** Usually, hitting this case is a
-good sign that the implementation needs a rewrite.
+**However, if there are more than one emitter, the order of execution for the methods is undefined accross the emitters.**
+Usually, hitting this case is a good sign that the implementation needs a rewrite.
 
 
 Error handling
 ==============
 
-The receiver won't raise anything. Any error raised inside a receiver while
-processing a request is logged-out.
+The receiver won't raise anything. Any error raised inside a receiver while processing a request is logged-out.
 
-Then, the exception class and the reason are passed to the emitter (without the
-stack trace which is lost, for now). The emitter will call the callbacks defined
-as onErrorCallbacks.
+Then, the exception class and the reason are passed to the emitter (without the stack trace which is lost, for now).
+The emitter will call the callbacks defined as onErrorCallbacks.
 
 If no onError callback is defined, errors are re-thrown by the `honor` and
 `process_results` methods.
@@ -265,10 +238,8 @@ If no onError callback is defined, errors are re-thrown by the `honor` and
 
 >>> def onError(error):
 >>>     print("error %s"% str(e))
->>> 
 >>> def myCallback(result):
 >>>     print("result of longRequest: %s"% result)
->>> 
 >>> emitter.longRequest.addOnSuccess(myCallback)
 >>> emitter.longRequest()
 >>> try:
@@ -276,17 +247,14 @@ If no onError callback is defined, errors are re-thrown by the `honor` and
 >>> except Exception as e:
 >>>     onError(e)
 
-However, it's best to make use of the callbacks because you konw exactly which
-request failed and what type of errors it might raise.
+However, it's best to make use of the callbacks because you konw exactly which request failed and what type of errors it might raise.
 
 :Example:
 
 >>> def onError(error):
 >>>     print("error %s"% str(e))
->>> 
 >>> def myCallback(result):
 >>>     print("result of longRequest: %s"% result)
->>> 
 >>> emitter.longRequest.addOnSuccess(myCallback)
 >>> emitter.longRequest.addOnError(onError)
 >>> emitter.longRequest()
@@ -302,10 +270,9 @@ Limitations
 Passed values
 -------------
 
-The main limitation is about the parameters and the returned values whose must
-be accepted by the internal queues. Don't expect to pass your SO_WONDERFULL
-objects. Take this limitation as a chance to write good code and objects with
-simple APIs. :-)
+The main limitation is about the parameters and the returned values whose must be accepted by the internal queues.
+Don't expect to pass your SO_WONDERFULL objects.
+Take this limitation as a chance to write good code and objects with simple APIs. :-)
 
 However, if you really need to pass objects, consider implementing the
 `managers.serializer.SerializerInterface` class.
@@ -314,18 +281,16 @@ However, if you really need to pass objects, consider implementing the
 Effectively using the receiver and emitters
 -------------------------------------------
 
-Because communication internally relies on queues and that queues must be
-**passed** to the workers, a manager is not helpfull in a worker. IOW, any
-worker requiring emitters can only work with emitters built before the start of
-the worker.
+Because communication internally relies on queues and that queues must be **passed** to the workers,
+a manager is not helpfull in a worker.
+IOW, any worker requiring emitters can only work with emitters built before the start of the worker.
 
 
 Receiver and emitter in the same worker
 ---------------------------------------
 
-The emitter and receiver objects are usually aimed at being run in different
-workers, one of them possibly being the main worker. However, it's possible to
-implement a manager only to handle advanced communication between objects.
+The emitter and receiver objects are usually aimed at being run in different workers, one of them possibly being the
+main worker. However, it's possible to implement a manager only to handle advanced communication between objects.
 
 If you do this, don't use the `receiver.serve()` and `emitter.honor()` methods.
 They will loop indefinitely and block. Instead, make sure to use
@@ -364,8 +329,7 @@ There are good demos at the end of the module. ,-)
 # The controls
 # ============
 #
-# This queue is used when the receiver and emitter need a sync to clear out
-# the pending requests.
+# This queue is used when the receiver and emitter need a sync to clear out the pending requests.
 #
 # Canonical format:
 #
@@ -468,14 +432,12 @@ class _EmitterBase(object):
             runCallbacks(onCompleteCallbacks, "onComplete", reqId)
 
         else:  # 'ERROR'
-            # Got an exception: clear the triggers, execute callbacks
-            # or re-throw.
+            # Got an exception: clear the triggers, execute callbacks or re-throw.
             cls_Exception, reason = rargs
 
             # The receiver must clear out the remaining triggers ids.
             self._emt_controlQueue.put(("ignoreRequests", list(self._emt_triggers.keys())))
-            # Clear out triggers ids.
-            self._emt_triggers = {}
+            self._emt_triggers = {}  # Clear out triggers ids.
 
             if len(onErrorCallbacks) < 1:
                 _raiseError(cls_Exception, reason)
@@ -503,8 +465,7 @@ class _Receiver(object):
     def __init__(self, ui, queues, manager):
         """
         :emitters type: dict
-        :emitters: keys: emitterNames, values: tuple of 'in', 'out'
-        and 'control' queues.
+        :emitters: keys: emitterNames, values: tuple of 'in', 'out' and 'control' queues.
         """
 
         self.ui = ui
@@ -542,13 +503,9 @@ class _Receiver(object):
             name, args, kwargs = req
 
             obj = type("request", (object,), {})
-            obj.apiName = apiName
-            obj.reqId = reqId
-            obj.name = name
-            obj.args = args
-            obj.kwargs = kwargs
-            obj.outQueue = outQueue
-            obj.ctrlQueue = ctrlQueue
+            obj.apiName, obj.reqId, obj.name, obj.args, obj.kwargs, obj.outQueue, obj.ctrlQueue = (
+                apiName, reqId, name, args, kwargs, outQueue, ctrlQueue
+            )
             return obj
 
         for inQueue, outQueue, ctrlQueue in self._queues.values():
@@ -606,8 +563,7 @@ class _Receiver(object):
                 if self._waitForControlRequest is True:
                     # We are expecting a list of trigger ids to ignore.
                     ctrlRequest = req.ctrlQueue.get_nowait()
-                    if ctrlRequest is None:
-                        # Need another serving pass.
+                    if ctrlRequest is None:  # Need another serving pass.
                         return self._shouldContinueServing()
 
                     ignoreIds = ctrlRequest[1]
@@ -619,22 +575,18 @@ class _Receiver(object):
                             if pendingRequest.reqId == ignoreId:
                                 serveRequests.remove(req)
                                 ignoreIds.remove(ignoreId)
-                    # We might still have "to-be-received" requests to ignore...
-                    self._ignoreIds += ignoreIds
+                    self._ignoreIds += ignoreIds  # We might still have "to-be-received" requests to ignore...
 
-                    # Ok, we are in synced with the emitter.
-                    self._waitForControlRequest is False
+                    self._waitForControlRequest is False  # Ok, we are in synced with the emitter.
 
-                # Should we ignore this request?
-                if req.reqId in self._ignoreIds:
+                if req.reqId in self._ignoreIds:  # Should we ignore this request?
                     self._ignoreIds.remove(req.reqId)
                     self._debug("ignoring %s" % req.reqId)
                     continue
 
                 self._debug("execute request %s(%s, %s)" % (req.name, req.args, req.kwargs))
 
-                # Execute the request.
-                result = getattr(self._obj, req.name)(*req.args, **req.kwargs)
+                result = getattr(self._obj, req.name)(*req.args, **req.kwargs)  # Execute the request.
 
                 if type(result) is not tuple:
                     result = (result,)
@@ -681,23 +633,15 @@ class Manager():
                 # Next part is the API name.
                 list_exposedName = exposedName.split("_")
                 apiName = list_exposedName[0]
-                if len(list_exposedName) > 2:
-                    exposedName = "_".join(list_exposedName[1:])
-                else:
-                    exposedName = list_exposedName[1]
-
+                exposedName = "_".join(list_exposedName[1:]) if len(list_exposedName) > 2 else list_exposedName[1]
                 yield name, apiName, exposedName
 
     def __buildQueues(self):
         queues = {}
         for real, api, exposed in self.__iterExposed():
-            queues[api] = (
-                self.concurrency.createQueue(),
-                self.concurrency.createQueue(),
-                self.concurrency.createQueue(),
-            )
+            queues[api] = (self.concurrency.createQueue(), self.concurrency.createQueue(), self.concurrency.createQueue())
         if len(queues.keys()) < 1:
-            raise Exception("manager '%s' has no method to expose" % self.__class__.__name__)
+            raise Exception(f"manager '{self.__class__.__name__}' has no method to expose")
         return queues
 
     def _mgr_isLegitEmtter(self, emitterName):
@@ -709,13 +653,7 @@ class Manager():
     def disable(self, emitterName):
         """Facility to disable the emitter with this name.
 
-        When disabled, a call to
-
-        >>> emitter.honor()
-
-        Will delay the triggers. You should avoid having delayed triggers,
-        though.
-
+        When disabled, a call to emitter.honor() will delay the triggers. You should avoid having delayed triggers tho.
         Implement this facility in your childs (see `stopServing`)."""
 
         if emitterName not in self.__queues:
@@ -797,8 +735,7 @@ class Manager():
             if apiName in self.__emitters:
                 return self.__emitters[apiName]
 
-            # Build the class.
-            emitterClassName = "emitter%s(%s)" % (manager.__class__.__name__, apiName)
+            emitterClassName = "emitter%s(%s)" % (manager.__class__.__name__, apiName)  # Build the class.
 
             cls_Emitter = type(emitterClassName, (_EmitterBase,), {})
 
@@ -809,8 +746,8 @@ class Manager():
                     raise Exception(
                         f"{self.__class__.__name__} tried to expose '{exposedName}' which is forbidden name"
                     )
-                # Only expose the methods dedicated to this emitter. We know
-                # this from the api part in the name of the method.
+                # Only expose the methods dedicated to this emitter.
+                # We know this from the api part in the name of the method.
                 if apiName == emitterName:
                     setattr(cls_Emitter, exposedName, expose_method(realName, exposedName))
 

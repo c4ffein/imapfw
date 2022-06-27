@@ -30,8 +30,7 @@ from ..constants import MGR
 class AccountManager(Manager):
     """The account manager to implement the receiver and define the emitter API.
 
-    This does NOT defines what the worker actually does since this is the purpose
-    of the engines.
+    This does NOT defines what the worker actually does since this is the purpose of the engines.
 
     The only available emitter API is 'action'.
 
