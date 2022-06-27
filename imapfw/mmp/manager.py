@@ -154,7 +154,7 @@ Callbacks are attached to a request like this:
 :Example:
 
 >>> def myCallback(result):
->>>     print("result of longRequest: %s"% result)
+>>>     print(f"result of longRequest: {result}")
 >>> emitter.longRequest.addOnSuccess(myCallback)
 >>> emitter.longRequest() # no wait
 >>> # other statements
@@ -170,7 +170,7 @@ There can be more than one callback of the same type for a request.
 :Example:
 
 >>> def myCallback(result):
->>>     print("result of longRequest: %s"% result)
+>>>     print(f"result of longRequest: {result}")
 >>> emitter.longRequest.addOnSuccess(myCallback)
 >>> emitter.longRequest.addOnSuccess(myCallback)
 >>> emitter.longRequest() # no wait
@@ -237,9 +237,9 @@ If no onError callback is defined, errors are re-thrown by the `honor` and
 :Example:
 
 >>> def onError(error):
->>>     print("error %s"% str(e))
+>>>     print(f"error {str(e)}")
 >>> def myCallback(result):
->>>     print("result of longRequest: %s"% result)
+>>>     print(f"result of longRequest: {%s}")
 >>> emitter.longRequest.addOnSuccess(myCallback)
 >>> emitter.longRequest()
 >>> try:
@@ -252,9 +252,9 @@ However, it's best to make use of the callbacks because you konw exactly which r
 :Example:
 
 >>> def onError(error):
->>>     print("error %s"% str(e))
+>>>     print(f"error {str(e)}")
 >>> def myCallback(result):
->>>     print("result of longRequest: %s"% result)
+>>>     print(f"result of longRequest: {result}")
 >>> emitter.longRequest.addOnSuccess(myCallback)
 >>> emitter.longRequest.addOnError(onError)
 >>> emitter.longRequest()
@@ -354,17 +354,17 @@ def _raiseError(cls_Exception, reason):
         try:
             raise cls_Exception(reason)
         except AttributeError:
-            raise RuntimeError("exception from receiver cannot be raised %s: %s" % (cls_Exception.__name__, reason))
+            raise RuntimeError(f"exception from receiver cannot be raised {cls_Exception.__name__}: {reason}")
 
 
 def receiverRunner(manager):
     name = manager.getName()
-    manager.ui.debugC(EMT, "[runner] %s starts serving" % name)
+    manager.ui.debugC(EMT, f"[runner] {name} starts serving")
     try:
         manager.serve()
-        manager.ui.debugC(EMT, "[runner] %s stopped serving" % name)
+        manager.ui.debugC(EMT, f"[runner] {name} stopped serving")
     except Exception as e:
-        manager.ui.debugC(EMT, "[runner] %s interrupted: %s" % (name, e))
+        manager.ui.debugC(EMT, f"[runner] {name} interrupted: {e}")
         raise
 
 
@@ -408,7 +408,7 @@ class _EmitterBase(object):
 
         def runCallbacks(callbacks, which, reqId, *cargs):
             for callback in callbacks:
-                self.ui.debugC(CLB, "running %s callback %s %s" % (which, reqId, callback))
+                self.ui.debugC(CLB, f"running {which} callback {reqId} {callback}")
 
                 func, args, kwargs = callback
                 args = cargs + args
