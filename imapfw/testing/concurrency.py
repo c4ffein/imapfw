@@ -39,7 +39,7 @@ class TestConcurrency(unittest.TestCase):
         self.blocking = blocking
 
     def test_00_concurrency_interface(self):
-        self.assertIsInstance(runtime.concurrency, ConcurrencyInterface)
+        self.assertIsInstance(runtime.concurrency, Concurrency)
 
     def test_01_queue_interface(self):
         self.assertIsInstance(runtime.concurrency.createQueue(), QueueInterface)

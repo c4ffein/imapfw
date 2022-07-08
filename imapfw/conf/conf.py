@@ -26,7 +26,7 @@ class ImapfwConfig(object):
         return logging
 
     def setupConcurrency(self):
-        self.concurrency = Concurrency(self.parser.get("concurrency"))
+        self.concurrency = Concurrency()
         set_module("concurrency", self.concurrency)  # Export concurrency module.
 
     def loadRascal(self):

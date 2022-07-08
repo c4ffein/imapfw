@@ -53,14 +53,6 @@ class _CLIOptions(object):
             help="define the logging level for the output (default is 3)",
         )
 
-        self.parser.add_argument(
-            "-c",
-            dest="concurrency",
-            default="multiprocessing",
-            choices=["multiprocessing", "threading"],
-            help="the concurrency backend to use (default is multiprocessing)",
-        )
-
         self.parser.add_argument("-r", dest="rascalfile", metavar="RASCAL", default=None, help="the rascal file to use")
 
         self.parser.add_argument(

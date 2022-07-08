@@ -486,7 +486,7 @@ if __name__ == "__main__":
     from imapfw.concurrency.concurrency import Concurrency
     from imapfw.ui.tty import TTY
 
-    c = Concurrency("multiprocessing")
+    c = Concurrency()
     ui = TTY(c.createLock())
     ui.configure()
     if _DEBUG:
