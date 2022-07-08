@@ -89,10 +89,9 @@ class ConcurrencyInterface(object):
 def WorkerSafe(lock) -> LockInterface:
     """Decorator for locking any callable.
 
-    It is usefull to forbid concurrent access to non
-    concurrency-safe data or libraries. The decorated callable has to end before the
-    next concurrent call can start. It is required for the decorated callable to end
-    or your program might deadlock."""
+    It is usefull to forbid concurrent access to non concurrency-safe data or libraries.
+    The decorated callable has to end before the next concurrent call can start.
+    It is required for the decorated callable to end or your program might deadlock."""
 
     def decorate(func):
         def safeFunc(*args, **kwargs):
@@ -144,9 +143,8 @@ class ThreadingBackend(ConcurrencyInterface):
             def kill(self):
                 """Kill a worker.
 
-                This is only usefull for the workers working with a failed
-                worker. In daemon mode: workers get's killed when the main thread
-                gets killed."""
+                This is only usefull for the workers working with a failed worker.
+                In daemon mode: workers get's killed when the main thread gets killed."""
 
                 runtime.ui.debugC(WRK, "%s killed" % self._name)
 
@@ -231,8 +229,7 @@ class MultiProcessingBackend(ConcurrencyInterface):
     SIGKILL
     -------
 
-    Current process is killed. Other processes continue (orphaned if main
-    process was killed).
+    Current process is killed. Other processes continue (orphaned if main process was killed).
     """
 
     def createWorker(self, name, target, args):
@@ -250,9 +247,8 @@ class MultiProcessingBackend(ConcurrencyInterface):
             def kill(self):
                 """Kill a worker.
 
-                This is only usefull for the workers working with a failed
-                worker. KeyboardInterrupt is natively sent to all workers by
-                multiprocessing."""
+                This is only usefull for the workers working with a failed worker.
+                KeyboardInterrupt is natively sent to all workers by multiprocessing."""
 
                 self._process.terminate()  # Send SIGTERM.
                 self.join(verbose=False)
@@ -323,10 +319,7 @@ class MultiProcessingBackend(ConcurrencyInterface):
         return currentWorkerName
 
 
-ConcurrencyBackends = {
-    "multiprocessing": MultiProcessingBackend,
-    "threading": ThreadingBackend,
-}
+ConcurrencyBackends = { "multiprocessing": MultiProcessingBackend, "threading": ThreadingBackend }
 
 
 def Concurrency(backendName: str) -> ConcurrencyInterface:
