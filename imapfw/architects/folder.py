@@ -103,9 +103,7 @@ class SyncFolderArchitect(object):
 
         engine = SyncFolders(self.workerName, emitter, left, right, self.accountName)
 
-        self.architect.start(
-            topRunner, (self.workerName, engine.run, folderTasks),
-        )
+        self.architect.start(topRunner, (self.workerName, engine.run, folderTasks))
 
 
 class SyncFoldersArchitect(object):
@@ -134,12 +132,9 @@ class SyncFoldersArchitect(object):
             if exitCode >= 0:
                 self.folderArchitects.remove(folderArchitect)
                 self._setExitCode(exitCode)
-                self._debug("%i architect(s) remaining" % len(self.folderArchitects))
+                self._debug(f"{len(self.folderArchitects)} architect(s) remaining")
 
-        if len(self.folderArchitects) < 1:
-            return self.exitCode
-        else:
-            return -1  # Let caller know workers are busy.
+        return self.exitCode if len(self.folderArchitects) < 1 else return -1  # Let caller know workers are busy.
 
     def kill(self) -> None:
         self._debug("kill()")
@@ -149,7 +144,7 @@ class SyncFoldersArchitect(object):
 
     def start(self, maxFolderWorkers: int, folders: Folders, left: Emitter = None, right: Emitter = None) -> None:
 
-        self._debug("start(%i, %s, %s, %s)" % (maxFolderWorkers, folders, repr(left), repr(right)))
+        self._debug(f"start({maxFolderWorkers}, {folders}, {repr(left)}, {repr(right))}")
 
         folderTasks = runtime.concurrency.createQueue()
         for folder in folders:
