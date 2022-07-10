@@ -6,23 +6,19 @@
 Introduction
 ============
 
-The concurrency module defines a common interfaces to whatever backend is used
-(multiprocessing, Python threading, etc).  "worker" is the generic term used to
-define a thread (for Python threading) or a process (for multiprocessing).
+The concurrency module defines an interface to the Python threads.
+"worker" is the generic term used to define a thread.
 
 Using the concurrency module
 ============================
 
-The main entry point is the :func:`Concurrency` factory. The returned
-backend satisfy the interface :class:`ConcurrencyInterface`.
-
-The :func:`WorkerSafe` decorator allows to easily make any existing callable
-concurrency-safe.
+Workers, Locks, and Queues are handled by the Concurrency class.
+The :func:`WorkerSafe` decorator allows to easily make any existing callable concurrency-safe.
 
 """
 
-from threading import Thread, Lock
-from queue import Queue, Empty
+from threading import Thread, Lock as TLock
+from queue import Queue as QQueue, Empty
 
 import pickle
 
@@ -32,27 +28,12 @@ from imapfw.constants import WRK
 
 SimpleLock = None
 """
-
-SimpleLock is a function defined at runtime and exposed in the rascal to create
-locks. The real function is set according to the command-line option.
-
+SimpleLock is a function defined at runtime and exposed in the rascal to create locks.
+The real function is set according to the command-line option.
 """
 
 
-class WorkerInterface(object):
-    def getName(self):
-        raise NotImplementedError
-
-    def join(self):
-        raise NotImplementedError
-
-    def kill(self):
-        raise NotImplementedError
-
-    def start(self):
-        raise NotImplementedError
-
-class Worker(WorkerInterface):
+class Worker:
     def __init__(self, name, target, args):
         self._name = name
 
@@ -78,9 +59,9 @@ class Worker(WorkerInterface):
         runtime.ui.debugC(WRK, "%s joined" % self._name)
 
 
-class TQueue:
+class Queue:
     def __init__(self):
-        self._queue = Queue()
+        self._queue = QQueue()
 
     def empty(self):
         return self._queue.empty()
@@ -100,7 +81,7 @@ class TQueue:
         self._queue.put(data)
 
 
-class TLock:
+class Lock:
     def __init__(self, lock):
         self.lock = lock
 
@@ -117,21 +98,7 @@ class TLock:
         self.lock.release()
 
 
-class ConcurrencyInterface(object):
-    def createLock(self):
-        raise NotImplementedError
-
-    def createQueue(self):
-        raise NotImplementedError
-
-    def createWorker(self):
-        raise NotImplementedError
-
-    def getCurrentWorkerNameFunction(self):
-        raise NotImplementedError
-
-
-def WorkerSafe(lock) -> TLock:
+def WorkerSafe(lock) -> Lock:
     """Decorator for locking any callable.
 
     It is usefull to forbid concurrent access to non concurrency-safe data or libraries.
@@ -169,10 +136,10 @@ class Concurrency:
         return Worker(name, target, args)
 
     def createLock(self):
-        return TLock(Lock())
+        return Lock(TLock())
 
     def createQueue(self):
-        return TQueue()
+        return Queue()
 
     def getCurrentWorkerNameFunction(self):
         from threading import current_thread
