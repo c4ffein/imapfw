@@ -6,17 +6,15 @@
 Overview
 ========
 
-This module allows event-driven communication between workers. "edmp" stands for
-"Event-Driven Message Passing".
+This module allows event-driven communication between workers. "edmp" stands for "Event-Driven Message Passing".
 
-This follows the "passing by message" design with improved events. The emitter
-sends a message. The message is passed to the attached receiver in another
-worker.  The receiver handles the message by calling the code assigned to this
-event. The returned values are sent back to the emitter as a message when
-appropriate.
+This follows the "passing by message" design with improved events.
+The emitter sends a message.
+The message is passed to the attached receiver in another worker.
+The receiver handles the message by calling the code assigned to this event.
+The returned values are sent back to the emitter as a message when appropriate.
 
-In order to interact with other workers, the `newEmitterReceiver` function
-returns:
+In order to interact with other workers, the `newEmitterReceiver` function returns:
     - one `Receiver` instance;
     - one `Emitter` instance.
 
@@ -53,8 +51,7 @@ The receiver must define the callable to each supported event.
 It works!
 >>>
 
-In this extract, the emitter is sending the event 'printInfo'. The receiver
-reacts by calling the function 'on_printInfo'.
+Here, the emitter is sending the event 'printInfo'. The receiver reacts by calling the function 'on_printInfo'.
 
 The receiver has only two public methods:
     - accept: to define the available events.
@@ -68,9 +65,8 @@ True or False whether it should continue reacting or not.
 >>> while receiver.react():
 >>>     pass
 
-Each event reaction ends before the next is processed in the order they are
-sent by the emitter (they are internally put in a queue). The processing is
-sequential. So, it's fine to use a receiver like that:
+Each event reaction ends before the next is processed in the order they are sent by the emitter.
+They are internally put in a queue. The processing is sequential. So, it's fine to use a receiver like that:
 
 :Example:
 
@@ -127,8 +123,7 @@ to the event name and calling it without argument.
 Sending synchronous events
 --------------------------
 
-If you need the result of the event, it's possible to get this by appending
-'_sync' to the event name.
+If you need the result of the event, it's possible to get this by appending '_sync' to the event name.
 
 :Example:
 
@@ -137,10 +132,8 @@ If you need the result of the event, it's possible to get this by appending
 Predefined events of emitters
 -----------------------------
 
-- 'stopServing': when used the react method of the receiver returns False
-  instead of True allowing reacting loop to stop.
-- 'help': print the docstrings of the accepted events. Usefull in shell sessions
-  or for debugging.
+- 'stopServing': when used the react method of the receiver returns False allowing reacting loop to stop.
+- 'help': print the docstrings of the accepted events. Usefull in shell sessions or for debugging.
 
 
 Error handling
@@ -149,8 +142,7 @@ Error handling
 Asynchronous mode
 -----------------
 
-The receiver won't raise any unhandled exception while reacting on events. The
-errors are logged-out.
+The receiver won't raise any unhandled exception while reacting on events. The errors are logged-out.
 
 
 Synchronous mode
@@ -162,9 +154,8 @@ Because queues can't pass exceptions, only the class and the reason are passed
 to the emitter (without the stack trace which was logged-out). The emitter will
 make its best to re-raise the exact same exception.
 
-To get proper exception handling, you must import all unhandled exception
-classes before using the emitter. Unkown exception classes will raise a
-RuntimeError.
+To get proper exception handling, you must import all unhandled exception classes before using the emitter.
+Unkown exception classes will raise a RuntimeError.
 
 
 Limitations
@@ -198,8 +189,7 @@ The emitter and receiver objects are usually aimed at being run in different
 workers, one of them possibly being the main worker. However, it's possible to
 use them to handle advanced communication between objects.
 
-If you do this, don't ever use the synchronous mode. This will loop indefinitely
-and block (deadlock).
+If you do this, don't ever use the synchronous mode. This will loop indefinitely and block (deadlock).
 
 
 There are good demos at the end of the module. ,-)
