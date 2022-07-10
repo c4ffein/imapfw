@@ -134,7 +134,7 @@ class SyncFoldersArchitect(object):
                 self._setExitCode(exitCode)
                 self._debug(f"{len(self.folderArchitects)} architect(s) remaining")
 
-        return self.exitCode if len(self.folderArchitects) < 1 else return -1  # Let caller know workers are busy.
+        return self.exitCode if len(self.folderArchitects) < 1 else -1  # Let caller know workers are busy.
 
     def kill(self) -> None:
         self._debug("kill()")
