@@ -16,6 +16,14 @@ from imapfw.concurrency import Queue
 from imapfw.types import Folder
 
 
+def con_and_sync_folder(repo, account_name, pos, folder):
+    if repo.isDriverBuilt_sync() is False:
+        repo.buildDriver(account_name, pos)
+    repo.connect()
+    repo.login()  # TODO : Added by c4ffein. Just check we need to login before sending loggin event?
+    repo.select_sync(folder)
+
+
 class SyncFolders(SyncEngine):
     """The engine to sync a folder in a worker."""
 
@@ -34,22 +42,13 @@ class SyncFolders(SyncEngine):
     def _syncFolder(self, folder: Folder) -> int:
         """Sync one folder."""
 
-        # TODO : C4ffein
+        # TODO : C4ffein / Or just keep the emitters as-is?
         # account = runtime.rascal.getAccount(self.accountName)
         # leftRepository = account.left
         # rightRepository = account.right
 
-        if self.left.isDriverBuilt_sync() is False:
-            self.left.buildDriver(self.accountName, "left")
-        if self.rght.isDriverBuilt_sync() is False:
-            self.rght.buildDriver(self.accountName, "right")
-
-        self.left.connect()
-        self.rght.connect()
-
-        self.left.select_sync(folder)
-        self.rght.select_sync(folder)
-
+        con_and_sync_folder(self.left, self.accountName, "left", folder)
+        con_and_sync_folder(self.rght, self.accountName, "right", folder)
         return 0
 
     def run(self, taskQueue: Queue) -> None:

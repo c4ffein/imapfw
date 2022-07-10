@@ -229,7 +229,7 @@ class IMAPlib2_skater(object):
 
         status, data = response
         if status == "OK":
-            # TODO: make a collection of UIDs.
+            # TODO: make a collection of UIDs. C4FFEIN ADD : HERE
             return int(data[0])
 
         data = data.decode(ENCODING)
