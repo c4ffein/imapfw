@@ -21,6 +21,9 @@ concurrency-safe.
 
 """
 
+from threading import Thread, Lock
+from queue import Queue, Empty
+
 import pickle
 
 from imapfw import runtime
@@ -49,27 +52,69 @@ class WorkerInterface(object):
     def start(self):
         raise NotImplementedError
 
+class Worker(WorkerInterface):
+    def __init__(self, name, target, args):
+        self._name = name
 
-class QueueInterface(object):
+        self._thread = Thread(name=name, target=target, args=args, daemon=True)
+
+    def getName(self):
+        return self._name
+    def kill(self):
+        """Kill a worker.
+
+        This is only usefull for the workers working with a failed worker.
+        In daemon mode: workers get's killed when the main thread gets killed."""
+
+        runtime.ui.debugC(WRK, "%s killed" % self._name)
+
+    def start(self):
+        self._thread.start()
+        runtime.ui.debugC(WRK, "%s started" % self._name)
+
+    def join(self):
+        runtime.ui.debugC(WRK, "%s join" % self._name)
+        self._thread.join()  # Block until thread is done.
+        runtime.ui.debugC(WRK, "%s joined" % self._name)
+
+
+class TQueue:
+    def __init__(self):
+        self._queue = Queue()
+
     def empty(self):
-        raise NotImplementedError
+        return self._queue.empty()
 
     def get(self):
-        raise NotImplementedError
+        return self._queue.get()
 
     def get_nowait(self):
-        raise NotImplementedError
+        try:
+            return self._queue.get_nowait()
+        except Empty:
+            return None
 
-    def put(self):
-        raise NotImplementedError
+    def put(self, data):
+        # Fail now if data can't be pickled. Otherwise, error will be raised at random time.
+        pickle.dumps(data)
+        self._queue.put(data)
 
 
-class LockInterface(object):
+class TLock:
+    def __init__(self, lock):
+        self.lock = lock
+
+    def __enter__(self):
+        self.lock.acquire()
+
+    def __exit__(self, t, v, tb):
+        self.lock.release()
+
     def acquire(self):
-        raise NotImplementedError
+        self.lock.acquire()
 
     def release(self):
-        raise NotImplementedError
+        self.lock.release()
 
 
 class ConcurrencyInterface(object):
@@ -86,7 +131,7 @@ class ConcurrencyInterface(object):
         raise NotImplementedError
 
 
-def WorkerSafe(lock) -> LockInterface:
+def WorkerSafe(lock) -> TLock:
     """Decorator for locking any callable.
 
     It is usefull to forbid concurrent access to non concurrency-safe data or libraries.
@@ -103,13 +148,6 @@ def WorkerSafe(lock) -> LockInterface:
 
     return decorate
 
-
-class LockBase(LockInterface):
-    def __enter__(self):
-        self.lock.acquire()
-
-    def __exit__(self, t, v, tb):
-        self.lock.release()
 
 class Concurrency:
     """
@@ -128,81 +166,12 @@ class Concurrency:
     """
 
     def createWorker(self, name, target, args):
-        from threading import Thread
-
-        class Worker(WorkerInterface):
-            def __init__(self, name, target, args):
-                self._name = name
-
-                self._thread = Thread(name=name, target=target, args=args, daemon=True)
-
-            def getName(self):
-                return self._name
-
-            def kill(self):
-                """Kill a worker.
-
-                This is only usefull for the workers working with a failed worker.
-                In daemon mode: workers get's killed when the main thread gets killed."""
-
-                runtime.ui.debugC(WRK, "%s killed" % self._name)
-
-            def start(self):
-                self._thread.start()
-                runtime.ui.debugC(WRK, "%s started" % self._name)
-
-            def join(self):
-                runtime.ui.debugC(WRK, "%s join" % self._name)
-                self._thread.join()  # Block until thread is done.
-                runtime.ui.debugC(WRK, "%s joined" % self._name)
-
         return Worker(name, target, args)
 
     def createLock(self):
-        from threading import Lock
-
-        class TLock(LockBase):
-            def __init__(self, lock):
-                self.lock = lock
-
-            def __enter__(self):
-                self.lock.acquire()
-
-            def __exit__(self, t, v, tb):
-                self.lock.release()
-
-            def acquire(self):
-                self.lock.acquire()
-
-            def release(self):
-                self.lock.release()
-
         return TLock(Lock())
 
     def createQueue(self):
-        from queue import Queue, Empty  # Thread-safe.
-
-        class TQueue(QueueInterface):
-            def __init__(self):
-                self._queue = Queue()
-
-            def empty(self):
-                return self._queue.empty()
-
-            def get(self):
-                return self._queue.get()
-
-            def get_nowait(self):
-                try:
-                    return self._queue.get_nowait()
-                except Empty:
-                    return None
-
-            def put(self, data):
-                # Fail now if data can't be pickled. Otherwise, error will be raised at random time.
-                pickle.dumps(data)
-                self._queue.put(data)
-
         return TQueue()
 
     def getCurrentWorkerNameFunction(self):
@@ -212,18 +181,3 @@ class Concurrency:
             return current_thread().name
 
         return currentWorkerName
-
-
-#ConcurrencyBackends = { "threading": ThreadingBackend }
-
-
-#class Concurrency:
-#
-#    global SimpleLock
-#    try:
-#        concurrency = ConcurrencyBackends[backendName]()
-#        if SimpleLock is None:
-#            SimpleLock = concurrency.createLock
-#        return concurrency
-#    except KeyError:
-#        raise Exception("unkown backend: %s" % backendName)

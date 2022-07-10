@@ -42,13 +42,13 @@ class TestConcurrency(unittest.TestCase):
         self.assertIsInstance(runtime.concurrency, Concurrency)
 
     def test_01_queue_interface(self):
-        self.assertIsInstance(runtime.concurrency.createQueue(), QueueInterface)
+        self.assertIsInstance(runtime.concurrency.createQueue(), Queue)
 
     def test_02_lock_interface(self):
         self.assertIsInstance(runtime.concurrency.createLock(), LockBase)
 
     def test_03_worker_interface(self):
-        self.assertIsInstance(runtime.concurrency.createWorker("noop", self.noop, ()), WorkerInterface)
+        self.assertIsInstance(runtime.concurrency.createWorker("noop", self.noop, ()), Worker)
 
     def test_04_worker_start_join(self):
         worker = runtime.concurrency.createWorker("noop", self.noop, ())
