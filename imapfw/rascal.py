@@ -3,7 +3,7 @@
 
 import imp  # TODO: use library importlib instead of deprecated imp.
 
-from imapfw.api import controllers, types, drivers, shells
+from imapfw.api import controllers, types, drivers, shell
 
 # Annotations.
 from typing import List, TypeVar
@@ -128,7 +128,7 @@ class Rascal(object):
             exec(compile(rascal_file.read(), path, "exec"), rascal_mod.__dict__)
         self._rascal = rascal_mod
 
-        for section_name, cls in (("DriveDrivers", shells.DriveDriver), ("Maildirs", types.Maildir), ("Imaps", types.Imap)):
+        for section_name, cls in (("DriveDrivers", shell.DriveDriver), ("Maildirs", types.Maildir), ("Imaps", types.Imap)):
             try:
                 section = getattr(self._rascal, section_name)
             except Exception as e:

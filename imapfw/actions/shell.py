@@ -4,7 +4,7 @@
 from typing import Type
 
 from imapfw import runtime
-from imapfw.shells import Shell
+from imapfw.shell import Shell
 from imapfw.conf import Parser
 
 from .interface import ActionInterface

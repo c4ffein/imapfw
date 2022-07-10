@@ -13,7 +13,7 @@ def configure(ui):
     pass
 
 
-from imapfw.api import controllers, types, drivers, shells
+from imapfw.api import controllers, types, drivers, shell
 
 ImapConfA = {
     'backend':  'imaplib3',
@@ -31,7 +31,7 @@ class ImapA(types.Imap):
     #controllers = [FakeImapA]
 
 
-class MShell(shells.Shell):
+class MShell(shell.Shell):
     def session(self):
         from imapfw.types import Messages, Message as M
 
@@ -49,7 +49,7 @@ class MShell(shells.Shell):
         self.interactive()
 
 
-class ImapShell(shells.DriveDriver):
+class ImapShell(shell.DriveDriver):
     conf = {'repository': ImapA}
 
     def session(self):

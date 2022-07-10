@@ -13,4 +13,4 @@ __all__ = [
     "DriveDriver",
 ]
 
-from imapfw.shells import Shell, DriveDriver
+from imapfw.shell import Shell, DriveDriver

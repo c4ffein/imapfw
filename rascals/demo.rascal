@@ -13,7 +13,7 @@ def configure(ui):
     pass
 
 
-from imapfw.api import controllers, types, drivers, shells
+from imapfw.api import controllers, types, drivers, shell
 
 #
 # Global variables.

@@ -20,7 +20,7 @@ def postHook(hook):
 def exceptionHook(hook, error):
     hook.ended()
 
-from imapfw.api import controllers, types, drivers, shells
+from imapfw.api import controllers, types, drivers, shell
 
 maildirsPath = "~/.imapfw/Mail"
 
@@ -69,7 +69,7 @@ Foundation = { "left": "MaildirB", "right": "ImapA" }
 
 
 # To work on IMAP driver.
-class DriveDriver(shells.DriveDriver):
+class DriveDriver(shell.DriveDriver):
     def session(self):
         d = self.d
 
@@ -91,7 +91,7 @@ DriveDrivers={
 
 
 # To work on messages.
-class MShell(shells.Shell):
+class MShell(shell.Shell):
     def beforeSession(self):
         self.m = types.message.Message(2)
         self.n = types.message.Message(3)
