@@ -22,6 +22,7 @@ from imapfw.types.account import Account
 def con_and_sync(emitter, emitter_name, account_name):
     emitter.buildDriver(account_name, emitter_name)
     emitter.connect()  # Connect the drivers.
+    emitter.login()  # TODO : Added by c4ffein. Just check we need to login before sending loggin event?
     emitter.getFolders()
     return emitter.getFolders_sync()
 

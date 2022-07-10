@@ -128,10 +128,7 @@ class SyncArchitect(object):
 
     def start(self) -> None:
         assert self.engineArch is not None
-
-        self.engineArch.start(
-            topRunner, (self.workerName, self.engine.run, self.accountTasks),
-        )
+        self.engineArch.start(topRunner, (self.workerName, self.engine.run, self.accountTasks))
 
 
 class SyncAccountsArchitect(object):

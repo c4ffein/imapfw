@@ -186,11 +186,8 @@ class IMAPlib2_skater(object):
         return self.imap.namespace()
 
     def login(self, user: str, password: str) -> None:
-        self._debug("login", "%s, <password>" % user)
-
-        # (typ, [data])
-        # e.g. ('OK', [b'Logged In'])
-        response = self.imap.login(user, password)
+        self._debug("login", f"{user}, <password>")
+        response = self.imap.login(user, password)  # (type, [data]) e.g. ('OK', [b'Logged In'])
         self._debugResponse("capability", response)
 
         status, data = response

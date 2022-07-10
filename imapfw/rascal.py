@@ -16,7 +16,15 @@ Class = TypeVar("Class")
 def fixin(nrascal, di):
     for k, v in di.items():
         if isinstance(v, str): di[k] = nrascal[v]
+        if isinstance(v, bytes): di[k] = nrascal[v].encode("utf-8")
         if isinstance(v, dict): fixin(nrascal, v)
+
+
+def fixin_conf(di):
+    if di is not None:
+        for k, v in di.items():
+            if isinstance(v, bytes): di[k] = v.decode("utf-8")
+            if isinstance(v, dict): fixin(v)
 
 
 class Rascal(object):
@@ -160,6 +168,7 @@ class Rascal(object):
         t = d.get("type")
         if issubclass(t, types.Repository):
             o = t(*map(lambda s: d.get(s), ["name", "driver", "conf"]))  # TODO : optional controllers ?
+            fixin_conf(o.conf)
             self.repositories[o.name] = o
         elif issubclass(t, types.Folder):
             o = t(*map(lambda s: d.get(s), ["name"]))  # TODO : optional encoding
@@ -170,6 +179,7 @@ class Rascal(object):
             if isinstance(d["right"], dict):
                 d["right"] = self.load_object_dict(d["right"])
             o = t(*map(lambda s: d.get(s), ["name", "left", "right", "conf"]))  # TODO : optional controllers ?
+            fixin_conf(o.conf)
             self.accounts[o.name] = o
         else:
             raise Exception(f"Unhandled type {t} in config")
