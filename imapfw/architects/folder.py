@@ -144,7 +144,7 @@ class SyncFoldersArchitect(object):
 
     def start(self, maxFolderWorkers: int, folders: Folders, left: Emitter = None, right: Emitter = None) -> None:
 
-        self._debug(f"start({maxFolderWorkers}, {folders}, {repr(left)}, {repr(right))}")
+        self._debug(f"start({maxFolderWorkers}, {folders}, {repr(left)}, {repr(right)})")
 
         folderTasks = runtime.concurrency.createQueue()
         for folder in folders:
