@@ -352,19 +352,18 @@ class Receiver(object):
         # Enable debug retention if too many messages.
         if self._previousTopic != topic:
             if self._previousTopicCount > 0:
-                self._debug("reacted %i times to '%s'" % (self._previousTopicCount, self._previousTopic))
+                self._debug(f"reacted {self._previousTopicCount} times to '{self._previousTopic}'")
             self._previousTopicCount = 0
             self._previousTopic = topic
-            self._debug("reacting to '%s' with '%s', %s, %s" % (topic, func.__name__, args, kwargs))
+            self._debug(f"reacting to '{topic}' with '{func.__name__}', {args}, {kwargs}")
 
         else:
             self._previousTopicCount += 1
             if self._previousTopicCount == 2:
-                self._debug("reacting to '%s' again, further messages made silent" % (topic))
+                self._debug(f"reacting to '{topic}' again, further messages made silent")
             if self._previousTopicCount > (_SILENT_TIMES - 1):
                 self._debug(
-                    "reacting for the %ith time to '%s' with '%s', %s, %s"
-                    % (_SILENT_TIMES, topic, func.__name__, args, kwargs)
+                    f"reacting for the {_SILENT_TIMES}th time to '{topic}' with '{func.__name__}', {args}, {kwargs}"
                 )
                 self._previousTopicCount = 0
 
@@ -376,9 +375,8 @@ class Receiver(object):
     def react(self) -> bool:
         """Process events in order.
 
-        The order of events is the order of the **available** events in the
-        queue. This is relevant only when *sending* events concurrently (from
-        different workers)."""
+        The order of events is the order of the **available** events in the queue.
+        This is relevant only when *sending* events concurrently (from different workers)."""
 
         for event in self._eventChan:
             topic, args, kwargs = event
