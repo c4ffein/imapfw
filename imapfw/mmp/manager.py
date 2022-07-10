@@ -912,7 +912,7 @@ if __name__ == "__main__":
 
                 def ex_architect_start(self):
                     remote = "imap.imapfw.net"
-                    self._driver.connect.addOnSuccess(self._onConnection, "connected to %s" % remote)
+                    self._driver.connect.addOnSuccess(self._onConnection, f"connected to {remote}")
                     self._driver.connect(remote)
                     self._driver.honor()
 
