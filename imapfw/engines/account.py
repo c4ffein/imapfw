@@ -51,7 +51,7 @@ class SyncAccounts(SyncEngine):
 
         # Merge the folder lists.
         mergedFolders = Folders()
-        for sideFolders in [leftFolders, rghtFolders]:
+        for sideFolders in [leftFolders, rightFolders]:
             for folder in sideFolders:
                 if folder not in mergedFolders:
                     mergedFolders.append(folder)
